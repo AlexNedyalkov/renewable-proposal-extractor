@@ -5,9 +5,10 @@
     Files: backend/app/main.py, frontend/index.html, frontend/styles.css, frontend/app.js, e2e/package.json, e2e/playwright.config.ts
     Completed: 2026-07-18 — StaticFiles mounted at "/" *after* the API routes so specific paths (/health, /api/documents) are matched first; verified with both TestClient and a live uvicorn boot (curl to /, /styles.css, /health all correct). Note on acceptance wording: `npx playwright test` with zero spec files actually exits 1 ("No tests found") — that's Playwright's correct behavior, not a broken install; verified the toolchain is genuinely functional end-to-end with a throwaway spec (ran, passed, then deleted), so tests/ stays empty until Task 2's first real spec. 2 new backend integration tests (root serves HTML, health still works post-mount). Security: semgrep clean, pip-audit clean, npm audit clean (0 vulnerabilities in the new e2e/ Node project).
 
-- [ ] Task 2: Upload form UI (P0)
+- [x] Task 2: Upload form UI (P0)
     Acceptance: `index.html` has a file input (`accept="application/pdf"`) and a submit button, each with `data-testid` attributes. Playwright test loads the page, confirms both elements are present, and saves a screenshot to `e2e/tests/screenshots/task2-step1-upload-form.png`.
     Files: frontend/index.html, e2e/tests/upload-form.spec.ts, e2e/tests/screenshots/
+    Completed: 2026-07-18 — Added a plain `<form>` with a `data-testid="file-input"` file input (accept=application/pdf) and `data-testid="submit-button"`. Playwright test run against a live local uvicorn instance (started/stopped manually for this task), confirmed red before the form existed, green after, screenshot saved. Backend test suite unaffected (28 passed). Security: semgrep clean, pip-audit clean, npm audit clean.
 
 - [ ] Task 3: Wire upload submission + loading state (P0)
     Acceptance: Submitting the form sends a `fetch POST` with `FormData` to `/api/documents`; a loading indicator (`data-testid="loading"`) appears while the request is in flight and disappears once it resolves. Playwright test intercepts the network call (`page.route`) to control timing, asserts the loading state appears then disappears, with before/after screenshots.

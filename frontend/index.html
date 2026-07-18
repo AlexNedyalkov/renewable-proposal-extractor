@@ -10,6 +10,11 @@
   <main id="app">
     <h1>Renewable Proposal Extractor</h1>
     <p>Upload a project proposal PDF to extract structured technical and financial data.</p>
+
+    <form id="upload-form">
+      <input type="file" id="file-input" data-testid="file-input" accept="application/pdf" />
+      <button type="submit" id="submit-button" data-testid="submit-button">Analyze</button>
+    </form>
   </main>
   <script src="/app.js"></script>
 </body>
