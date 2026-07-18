@@ -15,9 +15,10 @@
     Files: backend/app/pdf_extraction.py
     Completed: 2026-07-18 — 2 unit tests against fpdf2-generated fixtures (multi-page text PDF, blank no-text PDF). Added fpdf2 as a test-only dependency to generate fixtures. pip-audit and semgrep both clean.
 
-- [ ] Task 4: Extraction prompt + Claude client wrapper (P0)
+- [x] Task 4: Extraction prompt + Claude client wrapper (P0)
     Acceptance: `run_extraction(document_text: str) -> dict` sends the document text and target schema to Claude via the Anthropic API using structured/tool-use output, and returns a parsed JSON dict shaped like `ProposalExtraction`; testable with a mocked Anthropic client (no live API call required to verify the function's control flow).
     Files: backend/app/llm_extraction.py
+    Completed: 2026-07-18 — Uses Claude tool-use forced via tool_choice, with input_schema generated directly from ProposalExtraction.model_json_schema() (single source of truth). 3 unit tests against a fake Anthropic client (no live API calls). pip-audit and semgrep both clean, no new dependencies. Not yet exercised against the real Anthropic API — that happens in Task 9's manual smoke test.
 
 - [ ] Task 5: Validation & normalization layer (P0)
     Acceptance: `normalize_extraction(raw_dict) -> ProposalExtraction` validates raw LLM JSON against the Pydantic schema; any missing, malformed, or unparseable field is coerced to `confidence="not_found"`/`value=None` rather than raising, and the function always returns a valid `ProposalExtraction` instance.
