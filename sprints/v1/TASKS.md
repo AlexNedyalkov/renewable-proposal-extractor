@@ -25,9 +25,10 @@
     Files: backend/pytest.ini, backend/tests/test_llm_extraction_live.py
     Completed: 2026-07-18 — Confirmed default `pytest` run deselects the live test (0 cost/network). Ran explicitly with `pytest -m live` against the real Anthropic API using the user's key: passed in ~9s, correctly extracted project_name ("Sunridge Solar Farm") and total_capex_usd with non-"not_found" confidence. pip-audit and semgrep both clean.
 
-- [ ] Task 6: Validation & normalization layer (P0)
+- [x] Task 6: Validation & normalization layer (P0)
     Acceptance: `normalize_extraction(raw_dict) -> ProposalExtraction` validates raw LLM JSON against the Pydantic schema; any missing, malformed, or unparseable field is coerced to `confidence="not_found"`/`value=None` rather than raising, and the function always returns a valid `ProposalExtraction` instance.
     Files: backend/app/validation.py
+    Completed: 2026-07-18 — Per-field normalization: each of the 15 fields is validated independently, so one bad/missing field falls back to not_found without discarding valid fields elsewhere in the same response. 6 unit tests (fully valid, missing fields, invalid confidence, wrong-shaped field, empty dict, None input). pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 7: POST /api/documents endpoint (P0)
     Acceptance: Endpoint accepts a multipart PDF upload; rejects non-PDF files and files over a defined size limit with a 400 + structured error body; on valid input, runs extract → LLM → normalize synchronously, stores the result in an in-memory dict keyed by a generated `document_id`, and returns `{document_id, extraction}` as JSON.
