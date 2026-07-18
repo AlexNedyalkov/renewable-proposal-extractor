@@ -10,9 +10,10 @@
     Files: backend/app/schemas.py
     Completed: 2026-07-18 — 5 unit tests (valid/invalid confidence, optional value/snippet, full sample dict, missing-field rejection). pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 3: PDF text extraction module (P0)
+- [x] Task 3: PDF text extraction module (P0)
     Acceptance: `extract_text(pdf_path) -> str` extracts and joins text across all pages of a multi-page PDF using pdfplumber; raises a clear, typed exception when a PDF has no extractable text (e.g. scanned image with no OCR).
     Files: backend/app/pdf_extraction.py
+    Completed: 2026-07-18 — 2 unit tests against fpdf2-generated fixtures (multi-page text PDF, blank no-text PDF). Added fpdf2 as a test-only dependency to generate fixtures. pip-audit and semgrep both clean.
 
 - [ ] Task 4: Extraction prompt + Claude client wrapper (P0)
     Acceptance: `run_extraction(document_text: str) -> dict` sends the document text and target schema to Claude via the Anthropic API using structured/tool-use output, and returns a parsed JSON dict shaped like `ProposalExtraction`; testable with a mocked Anthropic client (no live API call required to verify the function's control flow).
