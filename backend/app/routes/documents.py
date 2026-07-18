@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from app.llm_extraction import run_extraction
 from app.pdf_extraction import NoExtractableTextError, extract_text
 from app.schemas import ProposalExtraction
-from app.store import save_document
+from app.store import get_document, save_document
 from app.validation import normalize_extraction
 
 router = APIRouter(prefix="/api/documents")
@@ -55,5 +55,15 @@ async def upload_document(file: UploadFile = File(...)) -> DocumentAnalysisRespo
 
     document_id = str(uuid.uuid4())
     save_document(document_id, extraction)
+
+    return DocumentAnalysisResponse(document_id=document_id, extraction=extraction)
+
+
+@router.get("/{document_id}", response_model=DocumentAnalysisResponse)
+async def get_document_analysis(document_id: str) -> DocumentAnalysisResponse:
+    extraction = get_document(document_id)
+
+    if extraction is None:
+        raise _error(404, "document_not_found", f"No document found with id '{document_id}'.")
 
     return DocumentAnalysisResponse(document_id=document_id, extraction=extraction)

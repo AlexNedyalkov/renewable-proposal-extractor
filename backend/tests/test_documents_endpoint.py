@@ -3,6 +3,8 @@ from fpdf import FPDF
 
 from app.main import app
 from app.schemas import ProposalExtraction
+from app.store import save_document
+from app.validation import normalize_extraction
 
 client = TestClient(app)
 
@@ -89,3 +91,22 @@ def test_upload_rejects_pdf_with_no_extractable_text():
 
     assert response.status_code == 400
     assert response.json()["detail"]["error"] == "no_extractable_text"
+
+
+def test_get_document_returns_stored_extraction():
+    extraction = normalize_extraction(FULL_VALID_RAW)
+    save_document("known-id", extraction)
+
+    response = client.get("/api/documents/known-id")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["document_id"] == "known-id"
+    assert body["extraction"]["project_name"]["value"] == "Sunridge Solar Farm"
+
+
+def test_get_document_returns_404_for_unknown_id():
+    response = client.get("/api/documents/does-not-exist")
+
+    assert response.status_code == 404
+    assert response.json()["detail"]["error"] == "document_not_found"

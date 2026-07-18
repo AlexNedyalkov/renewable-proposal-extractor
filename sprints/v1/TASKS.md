@@ -35,9 +35,10 @@
     Files: backend/app/main.py, backend/app/routes/documents.py, backend/app/store.py
     Completed: 2026-07-18 — File-type validation checks the actual `%PDF-` magic bytes rather than trusting the client-supplied Content-Type header (spoofable). 20MB size cap. 4 integration tests (happy path with mocked run_extraction, spoofed content-type rejection, oversized file rejection, no-extractable-text rejection). pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 8: GET /api/documents/{id} endpoint (P0)
+- [x] Task 8: GET /api/documents/{id} endpoint (P0)
     Acceptance: Returns the stored extraction JSON for a known `document_id`; returns 404 with a structured error body for an unknown id.
     Files: backend/app/routes/documents.py
+    Completed: 2026-07-18 — Reuses the same DocumentAnalysisResponse shape as POST for a consistent contract. 2 integration tests (known id, unknown id -> 404 with structured error). pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 9: Error handling for extraction failures (P1)
     Acceptance: If PDF text extraction fails or the Claude API call errors/times out, the endpoint returns a structured 500/502 error payload (error code + message) instead of an unhandled traceback; verified with a forced-failure case (corrupt PDF fixture or invalid API key).
