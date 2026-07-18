@@ -40,9 +40,10 @@
     Files: backend/app/routes/documents.py
     Completed: 2026-07-18 — Reuses the same DocumentAnalysisResponse shape as POST for a consistent contract. 2 integration tests (known id, unknown id -> 404 with structured error). pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 9: Error handling for extraction failures (P1)
+- [x] Task 9: Error handling for extraction failures (P1)
     Acceptance: If PDF text extraction fails or the Claude API call errors/times out, the endpoint returns a structured 500/502 error payload (error code + message) instead of an unhandled traceback; verified with a forced-failure case (corrupt PDF fixture or invalid API key).
     Files: backend/app/routes/documents.py, backend/app/llm_extraction.py
+    Completed: 2026-07-18 — run_extraction() now wraps any Anthropic client exception (auth, rate limit, timeout, connection error, etc.) into the typed ExtractionError instead of leaking SDK internals. The route catches ExtractionError -> 502 "extraction_service_error", and any unexpected (non-NoExtractableTextError) PDF-parsing exception -> 500 "pdf_processing_failed", both as structured JSON bodies instead of raw tracebacks. 3 new tests (unexpected PDF parser crash -> 500, extraction service failure -> 502, client error wrapped as ExtractionError). pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 10: Manual smoke test against a real sample PDF (P1)
     Acceptance: Using a sample PDF provided by the user, `POST /api/documents` returns a populated `ProposalExtraction` with at least `project_name` and one financial field correctly identified; outcome recorded in a short notes file.

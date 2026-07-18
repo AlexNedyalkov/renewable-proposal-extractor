@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from fpdf import FPDF
 
+from app.llm_extraction import ExtractionError
 from app.main import app
 from app.schemas import ProposalExtraction
 from app.store import save_document
@@ -110,3 +111,33 @@ def test_get_document_returns_404_for_unknown_id():
 
     assert response.status_code == 404
     assert response.json()["detail"]["error"] == "document_not_found"
+
+
+def test_upload_returns_500_when_pdf_processing_crashes_unexpectedly(monkeypatch):
+    def _boom(path):
+        raise RuntimeError("corrupt pdf, parser crashed")
+
+    monkeypatch.setattr("app.routes.documents.extract_text", _boom)
+
+    response = client.post(
+        "/api/documents",
+        files={"file": ("proposal.pdf", _make_pdf_bytes(), "application/pdf")},
+    )
+
+    assert response.status_code == 500
+    assert response.json()["detail"]["error"] == "pdf_processing_failed"
+
+
+def test_upload_returns_502_when_extraction_service_fails(monkeypatch):
+    def _boom(text):
+        raise ExtractionError("Claude API call failed: connection error")
+
+    monkeypatch.setattr("app.routes.documents.run_extraction", _boom)
+
+    response = client.post(
+        "/api/documents",
+        files={"file": ("proposal.pdf", _make_pdf_bytes(), "application/pdf")},
+    )
+
+    assert response.status_code == 502
+    assert response.json()["detail"]["error"] == "extraction_service_error"

@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from app.llm_extraction import run_extraction
+from app.llm_extraction import ExtractionError, run_extraction
 from app.pdf_extraction import NoExtractableTextError, extract_text
 from app.schemas import ProposalExtraction
 from app.store import get_document, save_document
@@ -46,11 +46,19 @@ async def upload_document(file: UploadFile = File(...)) -> DocumentAnalysisRespo
             text = extract_text(tmp_path)
         except NoExtractableTextError as exc:
             raise _error(400, "no_extractable_text", str(exc)) from exc
+        except Exception as exc:
+            raise _error(500, "pdf_processing_failed", "Failed to process the uploaded PDF.") from exc
     finally:
         if tmp_path:
             os.unlink(tmp_path)
 
-    raw_extraction = run_extraction(text)
+    try:
+        raw_extraction = run_extraction(text)
+    except ExtractionError as exc:
+        raise _error(
+            502, "extraction_service_error", "The extraction service failed to process this document."
+        ) from exc
+
     extraction = normalize_extraction(raw_extraction)
 
     document_id = str(uuid.uuid4())

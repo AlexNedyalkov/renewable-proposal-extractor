@@ -72,3 +72,18 @@ def test_run_extraction_raises_when_no_tool_use_block_returned():
 
     with pytest.raises(ExtractionError):
         run_extraction("doc text", client=client)
+
+
+class BoomingMessages:
+    def create(self, **kwargs):
+        raise RuntimeError("simulated network failure calling Anthropic API")
+
+
+class BoomingClient:
+    def __init__(self):
+        self.messages = BoomingMessages()
+
+
+def test_run_extraction_wraps_client_errors_as_extraction_error():
+    with pytest.raises(ExtractionError):
+        run_extraction("doc text", client=BoomingClient())

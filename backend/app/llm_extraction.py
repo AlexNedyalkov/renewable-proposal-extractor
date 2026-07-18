@@ -35,19 +35,22 @@ def run_extraction(document_text: str, client: Optional[Any] = None) -> dict:
     client = client or anthropic.Anthropic()
     schema = ProposalExtraction.model_json_schema()
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=4096,
-        tools=[
-            {
-                "name": EXTRACTION_TOOL_NAME,
-                "description": _TOOL_DESCRIPTION,
-                "input_schema": schema,
-            }
-        ],
-        tool_choice={"type": "tool", "name": EXTRACTION_TOOL_NAME},
-        messages=[{"role": "user", "content": _build_prompt(document_text)}],
-    )
+    try:
+        response = client.messages.create(
+            model=MODEL,
+            max_tokens=4096,
+            tools=[
+                {
+                    "name": EXTRACTION_TOOL_NAME,
+                    "description": _TOOL_DESCRIPTION,
+                    "input_schema": schema,
+                }
+            ],
+            tool_choice={"type": "tool", "name": EXTRACTION_TOOL_NAME},
+            messages=[{"role": "user", "content": _build_prompt(document_text)}],
+        )
+    except Exception as exc:
+        raise ExtractionError(f"Claude API call failed: {exc}") from exc
 
     for block in response.content:
         if block.type == "tool_use":
