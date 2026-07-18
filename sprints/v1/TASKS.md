@@ -30,9 +30,10 @@
     Files: backend/app/validation.py
     Completed: 2026-07-18 — Per-field normalization: each of the 15 fields is validated independently, so one bad/missing field falls back to not_found without discarding valid fields elsewhere in the same response. 6 unit tests (fully valid, missing fields, invalid confidence, wrong-shaped field, empty dict, None input). pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 7: POST /api/documents endpoint (P0)
+- [x] Task 7: POST /api/documents endpoint (P0)
     Acceptance: Endpoint accepts a multipart PDF upload; rejects non-PDF files and files over a defined size limit with a 400 + structured error body; on valid input, runs extract → LLM → normalize synchronously, stores the result in an in-memory dict keyed by a generated `document_id`, and returns `{document_id, extraction}` as JSON.
     Files: backend/app/main.py, backend/app/routes/documents.py, backend/app/store.py
+    Completed: 2026-07-18 — File-type validation checks the actual `%PDF-` magic bytes rather than trusting the client-supplied Content-Type header (spoofable). 20MB size cap. 4 integration tests (happy path with mocked run_extraction, spoofed content-type rejection, oversized file rejection, no-extractable-text rejection). pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 8: GET /api/documents/{id} endpoint (P0)
     Acceptance: Returns the stored extraction JSON for a known `document_id`; returns 404 with a structured error body for an unknown id.
