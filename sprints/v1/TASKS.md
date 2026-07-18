@@ -50,6 +50,8 @@
     Files: backend/tests/manual_smoke_test_notes.md
     Completed: 2026-07-18 — No user-provided PDF was on hand, so 5 real public renewable-energy project financing documents (ADB "Report and Recommendation" filings, solar + wind) were sourced from the web and added at backend/tests/fixtures/real_samples/. All 5 returned 200 with correctly extracted technical fields at high confidence; financial fields (IRR, payback, LCOE) were honestly `not_found` rather than hallucinated in all 5 (one document's redacted IRR line even surfaced "CONFIDENTIAL INFORMATION DELETED." as the source_snippet). A synthetic document was also run as a controlled baseline: 15/15 fields correct. Both are now durable, opt-in regression tests (`pytest -m live` in test_documents_endpoint_live.py), not just one-off manual runs. Full analysis, including a surfaced limitation (debt_equity_ratio has no canonical format), is in manual_smoke_test_notes.md. pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 11: API contract documentation (P1)
+- [x] Task 11: API contract documentation (P1)
     Acceptance: Actual implemented request/response JSON shapes are captured in `API_CONTRACT.md` at the repo root (endpoints, example requests/responses); any drift from PRD §4 is called out and reconciled.
+    Files: API_CONTRACT.md
+    Completed: 2026-07-18 — Documented GET /health, POST /api/documents, GET /api/documents/{id}, all 6 error codes, and the 15-field extraction schema. All example payloads captured directly from the running app (or from Task 10's real-document runs), not hand-written. Drift section reconciles 4 items the PRD left unspecified: the 20MB size limit, magic-byte (not Content-Type) file validation, the concrete error code names, and /health itself. This was sprint v1's final task — all 11 tasks complete. pip-audit and semgrep both clean, no source code changes.
     Files: API_CONTRACT.md
