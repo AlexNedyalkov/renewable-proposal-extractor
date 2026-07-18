@@ -45,9 +45,10 @@
     Files: backend/app/routes/documents.py, backend/app/llm_extraction.py
     Completed: 2026-07-18 — run_extraction() now wraps any Anthropic client exception (auth, rate limit, timeout, connection error, etc.) into the typed ExtractionError instead of leaking SDK internals. The route catches ExtractionError -> 502 "extraction_service_error", and any unexpected (non-NoExtractableTextError) PDF-parsing exception -> 500 "pdf_processing_failed", both as structured JSON bodies instead of raw tracebacks. 3 new tests (unexpected PDF parser crash -> 500, extraction service failure -> 502, client error wrapped as ExtractionError). pip-audit and semgrep both clean, no new dependencies.
 
-- [ ] Task 10: Manual smoke test against a real sample PDF (P1)
+- [x] Task 10: Manual smoke test against a real sample PDF (P1)
     Acceptance: Using a sample PDF provided by the user, `POST /api/documents` returns a populated `ProposalExtraction` with at least `project_name` and one financial field correctly identified; outcome recorded in a short notes file.
     Files: backend/tests/manual_smoke_test_notes.md
+    Completed: 2026-07-18 — No user-provided PDF was on hand, so 5 real public renewable-energy project financing documents (ADB "Report and Recommendation" filings, solar + wind) were sourced from the web and added at backend/tests/fixtures/real_samples/. All 5 returned 200 with correctly extracted technical fields at high confidence; financial fields (IRR, payback, LCOE) were honestly `not_found` rather than hallucinated in all 5 (one document's redacted IRR line even surfaced "CONFIDENTIAL INFORMATION DELETED." as the source_snippet). A synthetic document was also run as a controlled baseline: 15/15 fields correct. Both are now durable, opt-in regression tests (`pytest -m live` in test_documents_endpoint_live.py), not just one-off manual runs. Full analysis, including a surfaced limitation (debt_equity_ratio has no canonical format), is in manual_smoke_test_notes.md. pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 11: API contract documentation (P1)
     Acceptance: Actual implemented request/response JSON shapes are captured in `API_CONTRACT.md` at the repo root (endpoints, example requests/responses); any drift from PRD §4 is called out and reconciled.
