@@ -5,9 +5,10 @@
     Files: backend/app/main.py, backend/requirements.txt, backend/.env.example, .gitignore
     Completed: 2026-07-17 — Verified via pytest + a live uvicorn boot. pip-audit found 19 known CVEs in initially-pinned versions (fastapi/starlette, python-multipart, python-dotenv, pytest, pdfminer-six); bumped all to patched releases and re-verified clean.
 
-- [ ] Task 2: Define extraction schema (P0)
+- [x] Task 2: Define extraction schema (P0)
     Acceptance: Pydantic models in `schemas.py` define `ExtractedField` (value, confidence, source_snippet) and `ProposalExtraction` (technical + financial fields per PRD §4); a hand-built sample dict validates successfully against the model.
     Files: backend/app/schemas.py
+    Completed: 2026-07-18 — 5 unit tests (valid/invalid confidence, optional value/snippet, full sample dict, missing-field rejection). pip-audit and semgrep both clean, no new dependencies.
 
 - [ ] Task 3: PDF text extraction module (P0)
     Acceptance: `extract_text(pdf_path) -> str` extracts and joins text across all pages of a multi-page PDF using pdfplumber; raises a clear, typed exception when a PDF has no extractable text (e.g. scanned image with no OCR).
