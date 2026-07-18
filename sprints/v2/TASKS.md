@@ -10,9 +10,10 @@
     Files: frontend/index.html, e2e/tests/upload-form.spec.ts, e2e/tests/screenshots/
     Completed: 2026-07-18 — Added a plain `<form>` with a `data-testid="file-input"` file input (accept=application/pdf) and `data-testid="submit-button"`. Playwright test run against a live local uvicorn instance (started/stopped manually for this task), confirmed red before the form existed, green after, screenshot saved. Backend test suite unaffected (28 passed). Security: semgrep clean, pip-audit clean, npm audit clean.
 
-- [ ] Task 3: Wire upload submission + loading state (P0)
+- [x] Task 3: Wire upload submission + loading state (P0)
     Acceptance: Submitting the form sends a `fetch POST` with `FormData` to `/api/documents`; a loading indicator (`data-testid="loading"`) appears while the request is in flight and disappears once it resolves. Playwright test intercepts the network call (`page.route`) to control timing, asserts the loading state appears then disappears, with before/after screenshots.
     Files: frontend/app.js, e2e/tests/upload-flow.spec.ts, e2e/tests/screenshots/
+    Completed: 2026-07-18 — Form submit handler builds FormData, toggles the `hidden` attribute on the loading element around the fetch call (via try/finally, so it always hides even on failure). Response handling is currently just console.log — actual result/error rendering are Tasks 4 and 6. Playwright test mocks the network call's timing via page.route to deterministically observe loading appear/disappear; confirmed red before the handler existed, green after; 3 screenshots saved. Full e2e suite (2 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
 - [ ] Task 4: Render extraction results, including not_found fields (P0)
     Acceptance: On a successful response, all 15 fields render with their value, confidence badge, and source snippet, each with a `data-testid`; fields with `confidence: "not_found"` render with a visibly distinct style/label (e.g. "Not found in document") rather than blank or literal "null". Playwright test intercepts the API call with a canned response containing a mix of found and not_found fields, asserts both render correctly, with a screenshot.
