@@ -92,3 +92,30 @@ Before relying on this for production use, validate against a handful of
 TerraWatt's actual proposal documents, and consider splitting
 `debt_equity_ratio` (and similarly compound fields) into strictly-typed
 numeric sub-fields.
+
+## Update (sprint v3): debt_equity_ratio limitation fixed and re-verified
+
+The "no canonical format" limitation above was fixed in sprint v3: schema
+now has strictly-typed `debt_percent`/`equity_percent` numeric fields
+instead of free-text `debt_equity_ratio`. Re-ran `pytest -m live` (all 7
+live tests pass, ~110s) and additionally captured full responses for the
+two most relevant real documents:
+
+- **`triconboston_wind.pdf`** (previously `debt_equity_ratio: "75:25"`):
+  now returns `debt_percent: 75` and `equity_percent: 25`, both `high`
+  confidence, both citing the same snippet the old field used — the split
+  is a clean, lossless improvement over the old string.
+- **`cambodia_solar.pdf`** — the harder case. This document contains *two*
+  different debt/equity disclosures: a Sources-of-Funds percentage
+  breakdown (69% debt / 31% equity) and a separate "Debt-Equity Ratio at
+  Completion" leverage multiple (2.94x/2.24x), a different metric
+  entirely. The real API correctly returned `debt_percent: 69` and
+  `equity_percent: 31` — sourced from the Sources-of-Funds table
+  (`"Total Debt 9.8 9.2 69"` / `"1. Equity 3.4 4.1 31"`), not the leverage
+  ratio — matching this sprint's independently-verified ground truth
+  fixture exactly, both at `high` confidence.
+
+This is a good sign: the schema fix didn't just make the *shape* of the
+data cleaner, the model's underlying judgment about *which* number in the
+document actually answers "debt_percent" was already sound — it just had
+no clean typed field to put a percentage-shaped answer into before.
