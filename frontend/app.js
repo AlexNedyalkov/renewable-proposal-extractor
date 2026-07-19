@@ -1,5 +1,7 @@
 const form = document.getElementById('upload-form');
 const fileInput = document.getElementById('file-input');
+const lookupForm = document.getElementById('lookup-form');
+const lookupIdInput = document.getElementById('lookup-id-input');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 const validationError = document.getElementById('validation-error');
@@ -104,6 +106,37 @@ form.addEventListener('submit', async (event) => {
       method: 'POST',
       body: formData,
     });
+    const data = await response.json();
+
+    if (response.ok) {
+      renderResults(data.extraction);
+    } else {
+      const message = data?.detail?.message || 'An unexpected error occurred.';
+      showErrorBanner(message);
+      console.error(data);
+    }
+  } finally {
+    loading.hidden = true;
+  }
+});
+
+lookupForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const documentId = lookupIdInput.value.trim();
+  if (!documentId) {
+    showValidationError('Please enter a document ID to look up.');
+    return;
+  }
+
+  clearValidationError();
+  clearErrorBanner();
+  emptyState.hidden = true;
+
+  loading.hidden = false;
+
+  try {
+    const response = await fetch(`/api/documents/${encodeURIComponent(documentId)}`);
     const data = await response.json();
 
     if (response.ok) {
