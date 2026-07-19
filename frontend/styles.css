@@ -9,6 +9,22 @@ body {
   max-width: 800px;
   margin-inline: auto;
   color: #1a1a1a;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 1rem;
+  }
+}
+
+#empty-state {
+  color: #666;
+  font-style: italic;
+}
+
+input[type='file'] {
+  max-width: 100%;
 }
 
 #error-banner {

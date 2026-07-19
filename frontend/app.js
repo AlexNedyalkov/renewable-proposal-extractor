@@ -4,6 +4,7 @@ const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 const validationError = document.getElementById('validation-error');
 const errorBanner = document.getElementById('error-banner');
+const emptyState = document.getElementById('empty-state');
 
 function showValidationError(message) {
   validationError.textContent = message;
@@ -91,6 +92,7 @@ form.addEventListener('submit', async (event) => {
 
   clearValidationError();
   clearErrorBanner();
+  emptyState.hidden = true;
 
   const formData = new FormData();
   formData.append('file', file);

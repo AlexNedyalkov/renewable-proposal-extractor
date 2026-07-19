@@ -42,6 +42,9 @@
   Full e2e suite (10 tests: 9 pass + 1 skipped by default) and backend suite (28 tests) both pass; live test passes standalone (~15s). Security: semgrep clean, pip-audit clean, npm audit clean.
     Files (actual): e2e/tests/full-stack-smoke.spec.ts, e2e/tests/screenshots/, e2e/tsconfig.json, e2e/package.json, backend/app/main.py, e2e/tests/error-states.spec.ts
 
-- [ ] Task 8: Basic responsive/empty-state polish (P1)
+- [x] Task 8: Basic responsive/empty-state polish (P1)
     Acceptance: Page has a sensible initial empty state (no results yet) with brief instructions; layout doesn't overflow horizontally at common viewport widths (e.g. 375px and 1280px), checked manually or via the existing Playwright screenshots at both sizes.
     Files: frontend/index.html, frontend/styles.css
+    Completed: 2026-07-19 — Added an empty-state message, visible on load and hidden once a valid upload attempt starts (stays hidden afterward, including on error — it's specifically the *initial* empty state, not a permanent "no results" indicator). Overflow test deliberately uses a long project name and long source snippet in the canned response, not just the bare empty page, since an empty page trivially can't overflow. `overflow-wrap: break-word` on body (inherited by field text), reduced padding under 480px. 2 Playwright tests parametrized over 375px/1280px, each checking both the bare empty state and populated results for horizontal overflow (`scrollWidth > clientWidth`); confirmed red before the empty-state element existed. Full e2e suite (11 pass + 1 skipped), backend suite (28), and `tsc --noEmit` all pass. Security: semgrep clean, pip-audit clean, npm audit clean.
+
+  **Sprint v2 complete: all 8 tasks done.**
