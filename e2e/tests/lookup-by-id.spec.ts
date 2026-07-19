@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { test, expect } from '@playwright/test';
 
 const CANNED_EXTRACTION = {
@@ -59,4 +60,73 @@ test('looking up an unknown document id shows a not-found message', async ({ pag
   await expect(errorBanner).toContainText('No document found');
 
   await page.screenshot({ path: 'tests/screenshots/task5-step2-lookup-not-found.png' });
+});
+
+test('shows the document ID after a successful upload, so it can be used for a later lookup', async ({ page }) => {
+  await page.route('**/api/documents', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ document_id: 'mocked-doc-id-789', extraction: CANNED_EXTRACTION }),
+    })
+  );
+
+  await page.goto('/');
+  await page.getByTestId('file-input').setInputFiles({
+    name: 'proposal.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4 fake content for testing'),
+  });
+  await page.getByTestId('submit-button').click();
+
+  await expect(page.getByTestId('results')).toBeVisible();
+  await expect(page.getByTestId('document-id-value')).toHaveText('mocked-doc-id-789');
+
+  await page.screenshot({ path: 'tests/screenshots/task8-step1-document-id-shown.png' });
+});
+
+// Requires the backend to be running with a real ANTHROPIC_API_KEY
+// configured -- no network mocking here. Costs money (2 real API calls:
+// one upload, one implicit via the lookup reusing the stored result --
+// actually the lookup itself is free, it just reads the in-memory store).
+// Skipped by default; run explicitly with:
+//   RUN_LIVE_TESTS=1 npx playwright test lookup-by-id.spec.ts
+test('a real uploaded document can be retrieved again by ID through the UI', async ({ page }) => {
+  test.skip(!process.env.RUN_LIVE_TESTS, 'Live test skipped by default. Set RUN_LIVE_TESTS=1 to run.');
+  test.setTimeout(60_000);
+
+  const samplePdfPath = path.resolve(
+    __dirname,
+    '..',
+    '..',
+    'backend',
+    'tests',
+    'fixtures',
+    'real_samples',
+    'aj_solar_india.pdf',
+  );
+
+  await page.goto('/');
+  await page.getByTestId('file-input').setInputFiles(samplePdfPath);
+  await page.getByTestId('submit-button').click();
+
+  await expect(page.getByTestId('results')).toBeVisible({ timeout: 45_000 });
+  const documentId = await page.getByTestId('document-id-value').textContent();
+  const uploadedProjectName = await page.getByTestId('field-project_name-value').textContent();
+  expect(documentId).toBeTruthy();
+  expect(uploadedProjectName).toContain('AJ Solar');
+
+  // Reload to a clean slate, then look the same document up by ID instead
+  // of uploading again.
+  await page.reload();
+  await expect(page.getByTestId('empty-state')).toBeVisible();
+
+  await page.getByTestId('lookup-id-input').fill(documentId!);
+  await page.getByTestId('lookup-submit-button').click();
+
+  await expect(page.getByTestId('results')).toBeVisible();
+  const lookedUpProjectName = await page.getByTestId('field-project_name-value').textContent();
+  expect(lookedUpProjectName).toBe(uploadedProjectName);
+
+  await page.screenshot({ path: 'tests/screenshots/task8-step2-real-lookup-matches-upload.png', fullPage: true });
 });

@@ -7,6 +7,13 @@ const results = document.getElementById('results');
 const validationError = document.getElementById('validation-error');
 const errorBanner = document.getElementById('error-banner');
 const emptyState = document.getElementById('empty-state');
+const documentIdDisplay = document.getElementById('document-id-display');
+const documentIdValue = document.getElementById('document-id-value');
+
+function showDocumentId(documentId) {
+  documentIdValue.textContent = documentId;
+  documentIdDisplay.hidden = false;
+}
 
 function showValidationError(message) {
   validationError.textContent = message;
@@ -109,6 +116,7 @@ form.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (response.ok) {
+      showDocumentId(data.document_id);
       renderResults(data.extraction);
     } else {
       const message = data?.detail?.message || 'An unexpected error occurred.';
@@ -140,6 +148,7 @@ lookupForm.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (response.ok) {
+      showDocumentId(data.document_id);
       renderResults(data.extraction);
     } else {
       const message = data?.detail?.message || 'An unexpected error occurred.';
