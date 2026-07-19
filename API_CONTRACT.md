@@ -50,7 +50,8 @@ synchronously, and returns the structured result.
     "lcoe_usd_per_mwh": { "value": null, "confidence": "not_found", "source_snippet": null },
     "ppa_price_usd_per_mwh": { "value": 85, "confidence": "high", "source_snippet": "..." },
     "ppa_term_years": { "value": 20, "confidence": "high", "source_snippet": "..." },
-    "debt_equity_ratio": { "value": null, "confidence": "not_found", "source_snippet": null }
+    "debt_percent": { "value": null, "confidence": "not_found", "source_snippet": null },
+    "equity_percent": { "value": null, "confidence": "not_found", "source_snippet": null }
   }
 }
 ```
@@ -58,7 +59,7 @@ synchronously, and returns the structured result.
 Every field in `extraction` follows the same shape: `value` (any JSON type,
 or `null`), `confidence` (`"high" | "medium" | "low" | "not_found"`), and
 `source_snippet` (a short verbatim quote from the document, or `null`).
-`not_found` fields are never omitted — all 15 fields are always present, so
+`not_found` fields are never omitted — all 16 fields are always present, so
 consumers can render a fixed-shape results table regardless of what the
 document contained. See `backend/tests/manual_smoke_test_notes.md` for the
 full reasoning behind this design and real-world extraction results across
@@ -110,5 +111,13 @@ close the loop:
 - **`GET /health`**: not mentioned in the PRD's data flow; added in Task 1
   as a standard liveness endpoint, unrelated to the extraction pipeline.
 - No other drift — the endpoint paths, the `{document_id, extraction}`
-  response wrapper, and the 15-field extraction schema all match the PRD
-  as designed.
+  response wrapper, and the extraction schema all match the PRD as
+  designed.
+
+## Schema change (sprint v3)
+
+`debt_equity_ratio` (a free-text field) was replaced with two strictly-typed
+numeric fields, `debt_percent` and `equity_percent`. Real-document testing in
+sprint v1 found the original field came back in three different formats
+across documents ("75:25", a currency amount pair, "2.94x/2.24x"), making it
+unusable for direct calculation. The schema is now 16 fields, not 15.

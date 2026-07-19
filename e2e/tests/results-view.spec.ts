@@ -15,7 +15,8 @@ const CANNED_EXTRACTION = {
   lcoe_usd_per_mwh: { value: null, confidence: 'not_found', source_snippet: null },
   ppa_price_usd_per_mwh: { value: 27, confidence: 'low', source_snippet: 'a fixed price of $27 per MWh' },
   ppa_term_years: { value: 15, confidence: 'high', source_snippet: 'secured a 15-year power purchase agreement' },
-  debt_equity_ratio: { value: '65:35', confidence: 'medium', source_snippet: 'debt-to-equity ratio of 65:35' },
+  debt_percent: { value: 65, confidence: 'medium', source_snippet: 'debt-to-equity ratio of 65:35' },
+  equity_percent: { value: 35, confidence: 'medium', source_snippet: 'debt-to-equity ratio of 65:35' },
 };
 
 test('renders extraction results, including distinct styling for not_found fields', async ({ page }) => {
@@ -43,7 +44,7 @@ test('renders extraction results, including distinct styling for not_found field
   await expect(page.getByTestId('field-project_name-confidence')).toHaveText('high');
   await expect(page.getByTestId('field-project_name-snippet')).toContainText('Prairie Wind Energy Project');
 
-  // All 15 schema fields are present.
+  // All 16 schema fields are present.
   for (const fieldName of Object.keys(CANNED_EXTRACTION)) {
     await expect(page.getByTestId(`field-${fieldName}`)).toBeAttached();
   }
