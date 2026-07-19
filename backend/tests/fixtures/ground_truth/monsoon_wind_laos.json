@@ -1,0 +1,22 @@
+{
+  "source_pdf": "monsoon_wind_laos.pdf",
+  "notes": "All financial fields are explicitly redacted in the source: 'D. Project Cost and Financing Plan CONFIDENTIAL INFORMATION DELETED' and 'F. Projected Financial and Economic Performance CONFIDENTIAL INFORMATION DELETED'. Also genuinely doesn't state expected_annual_generation_mwh, commercial_operation_date, or a PPA price anywhere in the non-redacted text.",
+  "fields": {
+    "project_name": { "expected_found": true, "expected_value": "Monsoon Wind Power Project", "match": "contains" },
+    "location": { "expected_found": true, "expected_value": "Lao", "match": "contains" },
+    "technology_type": { "expected_found": true, "expected_value": "wind", "match": "contains" },
+    "installed_capacity_mw": { "expected_found": true, "expected_value": 600, "match": "exact" },
+    "expected_annual_generation_mwh": { "expected_found": false },
+    "commercial_operation_date": { "expected_found": false },
+    "developer_sponsor": { "expected_found": true, "expected_value": "Impact Energy Asia Development", "match": "contains" },
+    "total_capex_usd": { "expected_found": false },
+    "capex_per_mw": { "expected_found": false },
+    "expected_irr_percent": { "expected_found": false },
+    "payback_period_years": { "expected_found": false },
+    "lcoe_usd_per_mwh": { "expected_found": false },
+    "ppa_price_usd_per_mwh": { "expected_found": false },
+    "ppa_term_years": { "expected_found": true, "expected_value": 25, "match": "exact" },
+    "debt_percent": { "expected_found": false },
+    "equity_percent": { "expected_found": false }
+  }
+}

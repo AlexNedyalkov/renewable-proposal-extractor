@@ -1,0 +1,22 @@
+{
+  "source_pdf": "ac_energy_wind_vietnam.pdf",
+  "notes": "All financial fields except the PPA terms are explicitly redacted in the source: 'D. Project Cost and Financing Plan 20. [CONFIDENTIAL INFORMATION DELETED]'. That's a genuine not_found, not a scoring gap.",
+  "fields": {
+    "project_name": { "expected_found": true, "expected_value": "AC Energy Wind Power Project", "match": "contains" },
+    "location": { "expected_found": true, "expected_value": "Ninh Thuan", "match": "contains" },
+    "technology_type": { "expected_found": true, "expected_value": "wind", "match": "contains" },
+    "installed_capacity_mw": { "expected_found": true, "expected_value": 88, "match": "exact" },
+    "expected_annual_generation_mwh": { "expected_found": true, "expected_value": 240280, "match": "exact" },
+    "commercial_operation_date": { "expected_found": true, "expected_value": "30 September 2021", "match": "contains" },
+    "developer_sponsor": { "expected_found": true, "expected_value": "ACEN", "match": "contains" },
+    "total_capex_usd": { "expected_found": false },
+    "capex_per_mw": { "expected_found": false },
+    "expected_irr_percent": { "expected_found": false },
+    "payback_period_years": { "expected_found": false },
+    "lcoe_usd_per_mwh": { "expected_found": false },
+    "ppa_price_usd_per_mwh": { "expected_found": true, "expected_value": 85, "match": "exact" },
+    "ppa_term_years": { "expected_found": true, "expected_value": 20, "match": "exact" },
+    "debt_percent": { "expected_found": false },
+    "equity_percent": { "expected_found": false }
+  }
+}

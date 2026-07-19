@@ -1,0 +1,22 @@
+{
+  "source_pdf": "cambodia_solar.pdf",
+  "notes": "This document contains TWO different debt/equity disclosures, which is exactly the ambiguity that motivated this sprint's schema fix: (1) Table A1.3 'Sources of Funds' gives an explicit actual percentage breakdown (Equity $4.1M = 31%, Debt $9.2M = 69% of the $13.3M total) -- this is what debt_percent/equity_percent should map to. (2) A separate 'Debt-Equity Ratio at Completion: 2.94x / 2.24x' is a leverage-multiple covenant metric, not a capital-structure percentage split, and is NOT the right source for these fields. expected_irr_percent is deliberately not_found: the document discloses an economic IRR of 14.9% ('the project's economic internal rate of return is recalculated at 14.9%'), but the financial IRR -- the investor-relevant metric expected_irr_percent is meant to capture -- is explicitly redacted ('A. Financial Internal Rate of Return 3. CONFIDENTIAL INFORMATION DELETED'). Treating the disclosed economic IRR as the answer would conflate two different metrics.",
+  "fields": {
+    "project_name": { "expected_found": true, "expected_value": "Cambodia Solar Power Project", "match": "contains" },
+    "location": { "expected_found": true, "expected_value": "Bavet", "match": "contains" },
+    "technology_type": { "expected_found": true, "expected_value": "solar", "match": "contains" },
+    "installed_capacity_mw": { "expected_found": true, "expected_value": 10, "match": "exact" },
+    "expected_annual_generation_mwh": { "expected_found": true, "expected_value": 14000, "match": "exact" },
+    "commercial_operation_date": { "expected_found": true, "expected_value": "1 October 2017", "match": "contains" },
+    "developer_sponsor": { "expected_found": true, "expected_value": "Sunseap", "match": "contains" },
+    "total_capex_usd": { "expected_found": true, "expected_value": 13300000, "match": "exact" },
+    "capex_per_mw": { "expected_found": true, "expected_value": 1330000, "match": "exact" },
+    "expected_irr_percent": { "expected_found": false },
+    "payback_period_years": { "expected_found": false },
+    "lcoe_usd_per_mwh": { "expected_found": false },
+    "ppa_price_usd_per_mwh": { "expected_found": true, "expected_value": 91, "match": "exact" },
+    "ppa_term_years": { "expected_found": true, "expected_value": 20, "match": "exact" },
+    "debt_percent": { "expected_found": true, "expected_value": 69, "match": "exact" },
+    "equity_percent": { "expected_found": true, "expected_value": 31, "match": "exact" }
+  }
+}

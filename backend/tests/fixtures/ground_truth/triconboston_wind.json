@@ -1,0 +1,22 @@
+{
+  "source_pdf": "triconboston_wind.pdf",
+  "notes": "Financial figures are explicitly stated (Table A1.3: Total project cost RRP $360.0M vs Actual $316.8M; Equity actual $79.2M = 25.0% of total; Debt actual $237.6M = 75.0%), and the narrative independently confirms '75:25 debt-equity ratio' and a levelized tariff of $0.1045/kWh over a 20-year EPA. expected_irr_percent is deliberately not_found: the document states a 17% 'return on equity' under the feed-in tariff mechanism, which is a related but distinct metric from an overall project IRR, and no overall IRR figure is stated. payback_period_years and lcoe_usd_per_mwh are not stated anywhere.",
+  "fields": {
+    "project_name": { "expected_found": true, "expected_value": "Triconboston", "match": "contains" },
+    "location": { "expected_found": true, "expected_value": "Pakistan", "match": "contains" },
+    "technology_type": { "expected_found": true, "expected_value": "wind", "match": "contains" },
+    "installed_capacity_mw": { "expected_found": true, "expected_value": 150, "match": "exact" },
+    "expected_annual_generation_mwh": { "expected_found": true, "expected_value": 520000, "match": "exact" },
+    "commercial_operation_date": { "expected_found": true, "expected_value": "2018", "match": "contains" },
+    "developer_sponsor": { "expected_found": true, "expected_value": "Sapphire", "match": "contains" },
+    "total_capex_usd": { "expected_found": true, "expected_value": 316800000, "match": "exact" },
+    "capex_per_mw": { "expected_found": true, "expected_value": 2112000, "match": "exact" },
+    "expected_irr_percent": { "expected_found": false },
+    "payback_period_years": { "expected_found": false },
+    "lcoe_usd_per_mwh": { "expected_found": false },
+    "ppa_price_usd_per_mwh": { "expected_found": true, "expected_value": 104.5, "match": "exact" },
+    "ppa_term_years": { "expected_found": true, "expected_value": 20, "match": "exact" },
+    "debt_percent": { "expected_found": true, "expected_value": 75, "match": "exact" },
+    "equity_percent": { "expected_found": true, "expected_value": 25, "match": "exact" }
+  }
+}

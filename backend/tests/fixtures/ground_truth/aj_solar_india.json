@@ -1,0 +1,22 @@
+{
+  "source_pdf": "aj_solar_india.pdf",
+  "notes": "Main financing plan is explicitly redacted: 'D. Project Cost and Financing Plan 24. (Confidential information redacted). 25. (Confidential information redacted).' A footnote does mention two specific inputs (ADB loan of Rs4,063M; sponsor equity of Rs1,624M), but that isn't a clearly stated total-project debt/equity split (there may be other debt not shown), so debt_percent/equity_percent are conservatively marked not_found rather than asserting a derived ratio that could be wrong.",
+  "fields": {
+    "project_name": { "expected_found": true, "expected_value": "AJ Solar Power Project", "match": "contains" },
+    "location": { "expected_found": true, "expected_value": "Gujarat", "match": "contains" },
+    "technology_type": { "expected_found": true, "expected_value": "solar", "match": "contains" },
+    "installed_capacity_mw": { "expected_found": true, "expected_value": 80, "match": "exact" },
+    "expected_annual_generation_mwh": { "expected_found": true, "expected_value": 188000, "match": "exact" },
+    "commercial_operation_date": { "expected_found": true, "expected_value": "14 October 2022", "match": "contains" },
+    "developer_sponsor": { "expected_found": true, "expected_value": "Al Jomaih", "match": "contains" },
+    "total_capex_usd": { "expected_found": false },
+    "capex_per_mw": { "expected_found": false },
+    "expected_irr_percent": { "expected_found": false },
+    "payback_period_years": { "expected_found": false },
+    "lcoe_usd_per_mwh": { "expected_found": false },
+    "ppa_price_usd_per_mwh": { "expected_found": true, "expected_value": 26, "match": "exact" },
+    "ppa_term_years": { "expected_found": true, "expected_value": 25, "match": "exact" },
+    "debt_percent": { "expected_found": false },
+    "equity_percent": { "expected_found": false }
+  }
+}
