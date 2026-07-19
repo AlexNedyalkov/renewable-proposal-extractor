@@ -25,9 +25,10 @@
     Files: frontend/app.js, e2e/tests/validation.spec.ts, e2e/tests/screenshots/
     Completed: 2026-07-19 — Validation checks (no file / non-PDF `file.type`) run before building FormData and return early, so fetch is never called; a code comment makes explicit that this is a UX nicety only, not the security boundary (that's the backend's magic-byte check from sprint v1). 2 Playwright tests, each asserting zero network calls via a route-handler counter; confirmed red before validation existed. Full e2e suite (5 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
-- [ ] Task 6: Render backend error responses (P0)
+- [x] Task 6: Render backend error responses (P0)
     Acceptance: When the backend returns a 400/404/500/502 structured error, the UI shows that response's `detail.message` in a visible error banner instead of a blank page or silent console failure. Playwright test intercepts the API call returning each error status in turn, asserts the message renders, with a screenshot per case.
     Files: frontend/app.js, frontend/styles.css, e2e/tests/error-states.spec.ts, e2e/tests/screenshots/
+    Completed: 2026-07-19 — Non-ok responses render `detail.message` in an error banner (falling back to a generic message if that shape is ever missing), and console.error is kept alongside for debugging rather than replaced. Banner and validation-error are cleared at the start of every new submit attempt so stale state can't linger. Playwright test is parametrized over all 4 documented error codes (400/404/500/502) in a single spec via a loop, each with its own screenshot; confirmed red before the banner existed. Full e2e suite (9 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
 - [ ] Task 7: End-to-end smoke test against the real backend (P1)
     Acceptance: A Playwright test (no network mocking) drives the actual running FastAPI app, uploads one of sprint v1's real or synthetic sample PDFs through the real UI, and asserts real extracted results render. Marked/tagged as opt-in (costs money via the real Anthropic API), consistent with the backend's `pytest -m live` pattern — e.g. a separate `npx playwright test --grep @live` invocation, excluded from the default test run.

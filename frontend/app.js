@@ -3,6 +3,7 @@ const fileInput = document.getElementById('file-input');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
 const validationError = document.getElementById('validation-error');
+const errorBanner = document.getElementById('error-banner');
 
 function showValidationError(message) {
   validationError.textContent = message;
@@ -12,6 +13,16 @@ function showValidationError(message) {
 function clearValidationError() {
   validationError.hidden = true;
   validationError.textContent = '';
+}
+
+function showErrorBanner(message) {
+  errorBanner.textContent = message;
+  errorBanner.hidden = false;
+}
+
+function clearErrorBanner() {
+  errorBanner.hidden = true;
+  errorBanner.textContent = '';
 }
 
 function humanizeFieldName(fieldName) {
@@ -79,6 +90,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   clearValidationError();
+  clearErrorBanner();
 
   const formData = new FormData();
   formData.append('file', file);
@@ -95,7 +107,8 @@ form.addEventListener('submit', async (event) => {
     if (response.ok) {
       renderResults(data.extraction);
     } else {
-      // Error banner rendering is added in a later sprint v2 task.
+      const message = data?.detail?.message || 'An unexpected error occurred.';
+      showErrorBanner(message);
       console.error(data);
     }
   } finally {
