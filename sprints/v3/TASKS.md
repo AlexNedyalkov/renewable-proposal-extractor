@@ -17,9 +17,10 @@
 
   Wrote a test first (`test_ground_truth_fixtures.py`) asserting fixture-to-real-sample coverage and that each fixture's field set exactly matches `ProposalExtraction.model_fields` — a genuine regression guard against future schema drift, confirmed red before the fixtures existed. Full backend suite (30 tests) passes. Security: semgrep clean, pip-audit clean, no new dependencies.
 
-- [ ] Task 4: Extraction accuracy evaluation script (P0)
+- [x] Task 4: Extraction accuracy evaluation script (P0)
     Acceptance: `backend/scripts/evaluate_extraction_accuracy.py` runs the real pipeline (`extract_text` → `run_extraction` → `normalize_extraction`, real Anthropic API call) against each real sample PDF, compares each field's extracted value/confidence against its ground-truth fixture, and computes a per-field and overall match rate. Not part of the default test suite (costs money); run manually with `python scripts/evaluate_extraction_accuracy.py`.
     Files: backend/scripts/evaluate_extraction_accuracy.py
+    Completed: 2026-07-19 — Core comparison logic (`field_matches`, `score_document`) is pure and fully unit tested (8 tests, TDD red->green). One test caught a real bug during implementation: a field entirely absent from the extraction dict was being treated as "found" rather than "not_found" (`None != "not_found"` is True) — fixed by checking membership in the actual confidence levels instead of inequality with the not_found sentinel. Also added a 9th test verifying `run_document()`'s wiring (extract_text -> run_extraction -> normalize_extraction -> score_document) end-to-end with `run_extraction` mocked, so no real API cost — this is deliberately NOT run against the real API yet; that's Task 7's job. Full backend suite (40 tests) passes. Security: semgrep clean, pip-audit clean, no new dependencies.
 
 - [ ] Task 5: "Look up previous analysis" UI (P0)
     Acceptance: Frontend has a small form (ID input + button) that calls `GET /api/documents/{id}`; on success it renders using the same `renderResults()` as a fresh upload; on 404 it shows a clear "no document found" message via the existing error-banner pattern. Playwright test covers both the found and not-found cases, each with a screenshot.
