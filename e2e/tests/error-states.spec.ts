@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-async function uploadAndExpectFile(page) {
+async function uploadAndExpectFile(page: Page) {
   await page.getByTestId('file-input').setInputFiles({
     name: 'proposal.pdf',
     mimeType: 'application/pdf',

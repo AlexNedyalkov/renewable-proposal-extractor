@@ -30,9 +30,17 @@
     Files: frontend/app.js, frontend/styles.css, e2e/tests/error-states.spec.ts, e2e/tests/screenshots/
     Completed: 2026-07-19 — Non-ok responses render `detail.message` in an error banner (falling back to a generic message if that shape is ever missing), and console.error is kept alongside for debugging rather than replaced. Banner and validation-error are cleared at the start of every new submit attempt so stale state can't linger. Playwright test is parametrized over all 4 documented error codes (400/404/500/502) in a single spec via a loop, each with its own screenshot; confirmed red before the banner existed. Full e2e suite (9 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
-- [ ] Task 7: End-to-end smoke test against the real backend (P1)
+- [x] Task 7: End-to-end smoke test against the real backend (P1)
     Acceptance: A Playwright test (no network mocking) drives the actual running FastAPI app, uploads one of sprint v1's real or synthetic sample PDFs through the real UI, and asserts real extracted results render. Marked/tagged as opt-in (costs money via the real Anthropic API), consistent with the backend's `pytest -m live` pattern — e.g. a separate `npx playwright test --grep @live` invocation, excluded from the default test run.
     Files: e2e/tests/full-stack-smoke.spec.ts, e2e/tests/screenshots/
+    Completed: 2026-07-19 — Uses `backend/tests/fixtures/real_samples/monsoon_wind_laos.pdf` from sprint v1, uploaded through the real UI with no mocking. Opt-in via `test.skip(!process.env.RUN_LIVE_TESTS, ...)` rather than tag+grep — discovered mid-task that Playwright's config `grepInvert` and CLI `--grep` combine with AND (not override), so a permanent `grepInvert: /@live/` made every `--grep "@live"` invocation match nothing; the env-var skip is simpler and actually works. Run explicitly with `RUN_LIVE_TESTS=1 npx playwright test full-stack-smoke.spec.ts`.
+
+  Also found and fixed a real bug this task surfaced: the running app never called `load_dotenv()` — only the backend's pytest live tests did, in the test file itself — so `uvicorn app.main:app`, started exactly as documented, would silently 502 on every real extraction. Added `load_dotenv()` to `backend/app/main.py`. This is a correctness fix to the actual application, not a test workaround.
+
+  Added `@types/node`, `typescript`, and `e2e/tsconfig.json` (none existed before) after IDE diagnostics flagged `__dirname`/`node:path`/`process` as unresolvable; running `npx tsc --noEmit` then surfaced one pre-existing implicit-`any` parameter in `error-states.spec.ts`, fixed alongside.
+
+  Full e2e suite (10 tests: 9 pass + 1 skipped by default) and backend suite (28 tests) both pass; live test passes standalone (~15s). Security: semgrep clean, pip-audit clean, npm audit clean.
+    Files (actual): e2e/tests/full-stack-smoke.spec.ts, e2e/tests/screenshots/, e2e/tsconfig.json, e2e/package.json, backend/app/main.py, e2e/tests/error-states.spec.ts
 
 - [ ] Task 8: Basic responsive/empty-state polish (P1)
     Acceptance: Page has a sensible initial empty state (no results yet) with brief instructions; layout doesn't overflow horizontally at common viewport widths (e.g. 375px and 1280px), checked manually or via the existing Playwright screenshots at both sizes.

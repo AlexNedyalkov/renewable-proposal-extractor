@@ -1,9 +1,12 @@
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.routes.documents import router as documents_router
+load_dotenv()
+
+from app.routes.documents import router as documents_router  # noqa: E402
 
 app = FastAPI(title="Renewable Proposal Extractor")
 app.include_router(documents_router)
