@@ -20,9 +20,10 @@
     Files: frontend/app.js, frontend/index.html, frontend/styles.css, e2e/tests/results-view.spec.ts, e2e/tests/screenshots/
     Completed: 2026-07-19 — renderResults() iterates Object.entries(extraction) dynamically rather than hardcoding the 15 field names, so it can't drift from the backend schema if fields are ever added/removed. Field labels are derived from the key (e.g. `total_capex_usd` -> "Total Capex Usd") rather than a hand-maintained label map, same reasoning. not_found fields get a distinct label ("Not found in document"), a `.field-value-not-found` class, and no snippet row (since source_snippet is null); confidence badges are color-coded per level. Playwright test uses a canned response mixing found/not_found across all 15 fields; confirmed red before rendering existed. Full e2e suite (3 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
-- [ ] Task 5: Client-side validation before upload (P0)
+- [x] Task 5: Client-side validation before upload (P0)
     Acceptance: Submitting with no file selected, or a non-PDF file, shows an inline validation message and does not call the API (client-side UX nicety only — the backend's magic-byte check remains the real security boundary). Playwright test asserts the message appears and confirms no network request was made.
     Files: frontend/app.js, e2e/tests/validation.spec.ts, e2e/tests/screenshots/
+    Completed: 2026-07-19 — Validation checks (no file / non-PDF `file.type`) run before building FormData and return early, so fetch is never called; a code comment makes explicit that this is a UX nicety only, not the security boundary (that's the backend's magic-byte check from sprint v1). 2 Playwright tests, each asserting zero network calls via a route-handler counter; confirmed red before validation existed. Full e2e suite (5 tests) and backend suite (28 tests) both pass. Security: semgrep clean, pip-audit clean, npm audit clean.
 
 - [ ] Task 6: Render backend error responses (P0)
     Acceptance: When the backend returns a 400/404/500/502 structured error, the UI shows that response's `detail.message` in a visible error banner instead of a blank page or silent console failure. Playwright test intercepts the API call returning each error status in turn, asserts the message renders, with a screenshot per case.

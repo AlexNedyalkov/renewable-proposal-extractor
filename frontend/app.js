@@ -2,6 +2,17 @@ const form = document.getElementById('upload-form');
 const fileInput = document.getElementById('file-input');
 const loading = document.getElementById('loading');
 const results = document.getElementById('results');
+const validationError = document.getElementById('validation-error');
+
+function showValidationError(message) {
+  validationError.textContent = message;
+  validationError.hidden = false;
+}
+
+function clearValidationError() {
+  validationError.hidden = true;
+  validationError.textContent = '';
+}
 
 function humanizeFieldName(fieldName) {
   return fieldName
@@ -56,8 +67,18 @@ form.addEventListener('submit', async (event) => {
 
   const file = fileInput.files[0];
   if (!file) {
+    showValidationError('Please select a PDF file to upload.');
     return;
   }
+
+  // Client-side UX nicety only, not a security boundary — the backend's
+  // magic-byte check is the real gate against malformed/spoofed uploads.
+  if (file.type !== 'application/pdf') {
+    showValidationError('Only PDF files are supported.');
+    return;
+  }
+
+  clearValidationError();
 
   const formData = new FormData();
   formData.append('file', file);
