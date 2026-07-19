@@ -21,7 +21,8 @@ FULL_VALID_RAW = {
     "lcoe_usd_per_mwh": _field(28.0),
     "ppa_price_usd_per_mwh": _field(32.0),
     "ppa_term_years": _field(20),
-    "debt_equity_ratio": _field("70:30"),
+    "debt_percent": _field(70.0),
+    "equity_percent": _field(30.0),
 }
 
 

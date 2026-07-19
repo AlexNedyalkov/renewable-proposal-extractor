@@ -29,4 +29,5 @@ class ProposalExtraction(BaseModel):
     lcoe_usd_per_mwh: ExtractedField
     ppa_price_usd_per_mwh: ExtractedField
     ppa_term_years: ExtractedField
-    debt_equity_ratio: ExtractedField
+    debt_percent: ExtractedField
+    equity_percent: ExtractedField

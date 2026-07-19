@@ -44,7 +44,8 @@ def test_proposal_extraction_validates_full_sample_dict():
         "lcoe_usd_per_mwh": _sample_field(28.0, "$28/MWh LCOE"),
         "ppa_price_usd_per_mwh": _sample_field(32.0, "$32/MWh PPA price"),
         "ppa_term_years": _sample_field(20, "20-year PPA"),
-        "debt_equity_ratio": _sample_field("70:30", "70:30 debt-to-equity"),
+        "debt_percent": _sample_field(70.0, "70% debt"),
+        "equity_percent": _sample_field(30.0, "30% equity"),
     }
 
     extraction = ProposalExtraction(**sample)
