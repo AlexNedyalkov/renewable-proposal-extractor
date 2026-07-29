@@ -21,13 +21,24 @@ class ExtractionError(Exception):
 
 def _build_prompt(document_text: str) -> str:
     return (
-        "You are analyzing a renewable energy project proposal document for an "
-        "investment analyst. Extract the technical and financial data points "
-        "defined by the record_proposal_extraction tool. For each field, provide "
-        "a confidence level and, when found, a short verbatim snippet from the "
-        "document supporting the extracted value. Do not fabricate values that "
-        "are not present in the document.\n\n"
-        f"--- DOCUMENT TEXT ---\n{document_text}"
+        "<role>\n"
+        "You are analyzing a renewable energy project proposal document on behalf "
+        "of an investment analyst.\n"
+        "</role>\n\n"
+        "<task>\n"
+        "Extract the technical and financial data points defined by the "
+        "record_proposal_extraction tool. For each field, provide a confidence "
+        "level and, when the value is found, a short verbatim snippet from the "
+        "document supporting it.\n"
+        "</task>\n\n"
+        "<instructions>\n"
+        "- Base every value only on the document text provided below.\n"
+        "- If a value is not present in the document, set its confidence to "
+        "'not_found' and leave the value null — do not guess or fabricate.\n"
+        "</instructions>\n\n"
+        "<document>\n"
+        f"{document_text}\n"
+        "</document>"
     )
 
 

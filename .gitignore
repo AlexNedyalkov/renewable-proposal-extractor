@@ -33,3 +33,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Personal / local — not for the public repo
+/INTERVIEW_PREP_PLAN.md
+/INTERVIEW_PREP_NOTES.md
+/learning/
