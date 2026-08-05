@@ -130,6 +130,23 @@ def test_run_extraction_logs_reasoning_for_observability(caplog):
     assert "2.33x leverage ratio" in caplog.text
 
 
+def test_system_prompt_includes_few_shot_reasoning_examples():
+    tool_use_block = SimpleNamespace(
+        type="tool_use",
+        name=EXTRACTION_TOOL_NAME,
+        input={"reasoning": "r", "extraction": SAMPLE_TOOL_INPUT},
+    )
+    client = FakeClient([tool_use_block])
+
+    run_extraction("doc text", client=client)
+
+    system = client.messages.last_kwargs["system"]
+    assert "<examples>" in system
+    # a confident-extraction example and an ambiguous one both present
+    assert "solar PV" in system
+    assert "return ON EQUITY" in system
+
+
 def test_run_extraction_raises_when_no_tool_use_block_returned():
     text_block = SimpleNamespace(type="text", text="I could not process this document.")
     client = FakeClient([text_block])

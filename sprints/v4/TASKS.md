@@ -42,7 +42,7 @@ against the accuracy eval. Each task is one committed improvement.
     the user turn via `_build_user_content`. New test asserts the document stays out of
     the system prompt. 41 tests green.
 
-- [ ] **Task 5 — Few-shot examples + Chain-of-Thought for ambiguous fields** (P0)
+- [x] **Task 5 — Few-shot examples + Chain-of-Thought for ambiguous fields** (P0)
     Approach = A + D (few-shot CoT adapted to forced tool-use):
       A. a `reasoning` field declared *first* in the tool schema, so the model does
          chain-of-thought inside the forced tool call (temp=0, one call); logged at
@@ -50,7 +50,8 @@ against the accuracy eval. Each task is one committed improvement.
       D. few-shot worked examples in the system prompt demonstrating the reasoning
          for the ambiguous metrics (IRR vs return-on-equity, debt% vs leverage ratio).
     [x] A — `_ReasonedExtraction` wrapper + INFO logging + tests (2026-08-05).
-    [ ] D — few-shot examples in the system prompt.
+    [x] D — 5 worked examples in the system prompt (3 confident : 2 not_found, to
+        match the real distribution and avoid anchoring on not_found) + test (2026-08-05).
 
 - [ ] **Task 6 — Measure the prompt/schema changes against the eval** (P0)
     Acceptance: run the accuracy eval on the original prompt vs the improved one;
