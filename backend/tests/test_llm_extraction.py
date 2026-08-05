@@ -67,6 +67,21 @@ def test_run_extraction_forces_tool_choice_and_sends_document_text():
     assert "unique-document-marker-xyz" in kwargs["messages"][0]["content"]
 
 
+def test_run_extraction_uses_temperature_zero_and_system_prompt():
+    tool_use_block = SimpleNamespace(type="tool_use", name=EXTRACTION_TOOL_NAME, input=SAMPLE_TOOL_INPUT)
+    client = FakeClient([tool_use_block])
+
+    run_extraction("unique-document-marker-xyz", client=client)
+
+    kwargs = client.messages.last_kwargs
+    # Deterministic extraction — no sampling.
+    assert kwargs["temperature"] == 0
+    # Behavioral rules go in the system message...
+    assert "investment analyst" in kwargs["system"]
+    # ...and the untrusted document stays out of it (user turn only).
+    assert "unique-document-marker-xyz" not in kwargs["system"]
+
+
 def test_run_extraction_raises_when_no_tool_use_block_returned():
     text_block = SimpleNamespace(type="text", text="I could not process this document.")
     client = FakeClient([text_block])

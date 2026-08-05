@@ -21,17 +21,40 @@ against the accuracy eval. Each task is one committed improvement.
     Files: `backend/app/schemas.py`
     Done 2026-07-29 — 16/16 fields described; schema verified; 40 tests green.
 
-- [ ] **Task 3 — Few-shot examples + Chain-of-Thought for ambiguous fields** (P0)
+- [x] **Task 3 — Pin `temperature=0` for deterministic extraction** (P0, do before the eval)
+    Acceptance: `run_extraction` passes `temperature=0` to the Claude call. Extraction
+    is a temp=0 use case (we want the single most-likely reading of each value, not
+    sampling). Also a *precondition for trustworthy eval* — at the default temp the
+    model can give different answers on re-run, so before/after deltas would include
+    sampling noise. Tests pass.
+    Files: `backend/app/llm_extraction.py`
+    Done 2026-08-05 — `temperature=0` set; asserted by a new test. 41 tests green.
+
+- [x] **Task 4 — Move role + instructions into a dedicated `system` message** (P0, do before the eval)
+    Acceptance: `run_extraction` passes a `system=` argument carrying the `<role>` and
+    `<instructions>` content, leaving the user turn to carry the `<document>` (untrusted
+    content). Claude weights the system message most strongly, so behavioral rules
+    belong there — and it cleanly separates our instructions from the document text,
+    which also helps the Week-6 prompt-injection story. Surfaced by the Lesson 01
+    concepts ledger (we weren't using a system message at all). Tests pass.
+    Files: `backend/app/llm_extraction.py`
+    Done 2026-08-05 — `_SYSTEM_PROMPT` (role+instructions) via `system=`; document in
+    the user turn via `_build_user_content`. New test asserts the document stays out of
+    the system prompt. 41 tests green.
+
+- [ ] **Task 5 — Few-shot examples + Chain-of-Thought for ambiguous fields** (P0)
     Acceptance: the prompt guides the model to reason about which metric is which
     before filling ambiguous fields (CoT), and/or shows a few worked examples for the
     tricky cases.
 
-- [ ] **Task 4 — Measure the prompt/schema changes against the eval** (P0)
+- [ ] **Task 6 — Measure the prompt/schema changes against the eval** (P0)
     Acceptance: run the accuracy eval on the original prompt vs the improved one;
     record whether accuracy on the ambiguous fields moved. Before/after numbers.
+    Teaching beat: run once at default temp, once at temp=0, and watch the run-to-run
+    noise disappear.
     Files: `backend/scripts/evaluate_extraction_accuracy.py`
 
-- [ ] **Task 5 (deferred) — Interchangeable financial metrics: extract faithfully,
+- [ ] **Task 7 (deferred) — Interchangeable financial metrics: extract faithfully,
     derive in code** (P2)
     Idea: the LLM extracts whichever *form* a metric is stated in (%, ratio, multiple)
     plus a form label; deterministic code converts to canonical debt%/equity%. Keeps
