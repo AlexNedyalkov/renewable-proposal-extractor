@@ -1,3 +1,4 @@
+import logging
 from types import SimpleNamespace
 
 import pytest
@@ -80,6 +81,53 @@ def test_run_extraction_uses_temperature_zero_and_system_prompt():
     assert "investment analyst" in kwargs["system"]
     # ...and the untrusted document stays out of it (user turn only).
     assert "unique-document-marker-xyz" not in kwargs["system"]
+
+
+def test_tool_schema_reasons_before_extracting():
+    # The wrapper puts `reasoning` first so the model does chain-of-thought
+    # before committing to values (JSON is generated top-to-bottom).
+    tool_use_block = SimpleNamespace(
+        type="tool_use",
+        name=EXTRACTION_TOOL_NAME,
+        input={"reasoning": "r", "extraction": SAMPLE_TOOL_INPUT},
+    )
+    client = FakeClient([tool_use_block])
+
+    run_extraction("doc text", client=client)
+
+    schema = client.messages.last_kwargs["tools"][0]["input_schema"]
+    props = list(schema["properties"].keys())
+    assert props[0] == "reasoning"
+    assert "extraction" in props
+    assert "reasoning" in schema["required"]
+
+
+def test_run_extraction_unwraps_reasoning_and_returns_extraction():
+    wrapped = {
+        "reasoning": "14% is return on equity, not the project IRR.",
+        "extraction": SAMPLE_TOOL_INPUT,
+    }
+    tool_use_block = SimpleNamespace(type="tool_use", name=EXTRACTION_TOOL_NAME, input=wrapped)
+    client = FakeClient([tool_use_block])
+
+    result = run_extraction("doc text", client=client)
+
+    assert result == SAMPLE_TOOL_INPUT  # reasoning stripped from the return
+    ProposalExtraction(**result)
+
+
+def test_run_extraction_logs_reasoning_for_observability(caplog):
+    wrapped = {
+        "reasoning": "debt is stated as a 2.33x leverage ratio, not a percentage.",
+        "extraction": SAMPLE_TOOL_INPUT,
+    }
+    tool_use_block = SimpleNamespace(type="tool_use", name=EXTRACTION_TOOL_NAME, input=wrapped)
+    client = FakeClient([tool_use_block])
+
+    with caplog.at_level(logging.INFO):
+        run_extraction("doc text", client=client)
+
+    assert "2.33x leverage ratio" in caplog.text
 
 
 def test_run_extraction_raises_when_no_tool_use_block_returned():

@@ -43,9 +43,14 @@ against the accuracy eval. Each task is one committed improvement.
     the system prompt. 41 tests green.
 
 - [ ] **Task 5 — Few-shot examples + Chain-of-Thought for ambiguous fields** (P0)
-    Acceptance: the prompt guides the model to reason about which metric is which
-    before filling ambiguous fields (CoT), and/or shows a few worked examples for the
-    tricky cases.
+    Approach = A + D (few-shot CoT adapted to forced tool-use):
+      A. a `reasoning` field declared *first* in the tool schema, so the model does
+         chain-of-thought inside the forced tool call (temp=0, one call); logged at
+         INFO for observability, then discarded (callers still get the 16-field dict).
+      D. few-shot worked examples in the system prompt demonstrating the reasoning
+         for the ambiguous metrics (IRR vs return-on-equity, debt% vs leverage ratio).
+    [x] A — `_ReasonedExtraction` wrapper + INFO logging + tests (2026-08-05).
+    [ ] D — few-shot examples in the system prompt.
 
 - [ ] **Task 6 — Measure the prompt/schema changes against the eval** (P0)
     Acceptance: run the accuracy eval on the original prompt vs the improved one;

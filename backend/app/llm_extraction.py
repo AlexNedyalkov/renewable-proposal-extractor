@@ -1,8 +1,12 @@
+import logging
 from typing import Any, Optional
 
 import anthropic
+from pydantic import BaseModel, Field
 
 from app.schemas import ProposalExtraction
+
+logger = logging.getLogger(__name__)
 
 MODEL = "claude-sonnet-5"
 EXTRACTION_TOOL_NAME = "record_proposal_extraction"
@@ -46,9 +50,34 @@ def _build_user_content(document_text: str) -> str:
     return f"<document>\n{document_text}\n</document>"
 
 
+class _ReasonedExtraction(BaseModel):
+    """Wrapper used *only* to build the tool schema, so the model reasons
+    before it commits to values.
+
+    Chain-of-thought is normally free text emitted before the answer — but our
+    forced tool_choice sends the model straight into the structured tool call,
+    with no room to think first. Declaring ``reasoning`` *before* ``extraction``
+    restores it: JSON is generated top-to-bottom, so the model fills
+    ``reasoning`` first. It is scratch paper — it improves the values, then we
+    log it for observability and return only the extraction.
+    """
+
+    reasoning: str = Field(
+        description=(
+            "Scratch paper. Think step by step here BEFORE filling in the "
+            "extraction below. Work through any ambiguous or easily-confused "
+            "fields — e.g. whether a stated return is the project IRR versus "
+            "return-on-equity, or whether a capital-structure figure is a "
+            "percentage versus a leverage ratio/multiple. Reason first, then "
+            "fill the extraction to match your reasoning."
+        )
+    )
+    extraction: ProposalExtraction
+
+
 def run_extraction(document_text: str, client: Optional[Any] = None) -> dict:
     client = client or anthropic.Anthropic()
-    schema = ProposalExtraction.model_json_schema()
+    schema = _ReasonedExtraction.model_json_schema()
 
     try:
         response = client.messages.create(
@@ -71,6 +100,12 @@ def run_extraction(document_text: str, client: Optional[Any] = None) -> dict:
 
     for block in response.content:
         if block.type == "tool_use":
-            return block.input
+            tool_input = block.input
+            reasoning = tool_input.get("reasoning")
+            if reasoning:
+                logger.info("Extraction reasoning: %s", reasoning)
+            # reasoning is scratch paper for observability only; callers get
+            # the 16-field extraction dict
+            return tool_input.get("extraction", tool_input)
 
     raise ExtractionError("Claude response did not include a tool_use block")
