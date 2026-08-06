@@ -68,15 +68,17 @@ def test_run_extraction_forces_tool_choice_and_sends_document_text():
     assert "unique-document-marker-xyz" in kwargs["messages"][0]["content"]
 
 
-def test_run_extraction_uses_temperature_zero_and_system_prompt():
+def test_run_extraction_omits_temperature_and_uses_system_prompt():
     tool_use_block = SimpleNamespace(type="tool_use", name=EXTRACTION_TOOL_NAME, input=SAMPLE_TOOL_INPUT)
     client = FakeClient([tool_use_block])
 
     run_extraction("unique-document-marker-xyz", client=client)
 
     kwargs = client.messages.last_kwargs
-    # Deterministic extraction — no sampling.
-    assert kwargs["temperature"] == 0
+    # claude-sonnet-5 deprecated `temperature` — sending it is a 400 error, so
+    # we must NOT pass it. (A mock can't catch this; only a real call can — which
+    # is how the eval found it. This guards against a regression.)
+    assert "temperature" not in kwargs
     # Behavioral rules go in the system message...
     assert "investment analyst" in kwargs["system"]
     # ...and the untrusted document stays out of it (user turn only).

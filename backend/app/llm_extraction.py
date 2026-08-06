@@ -106,7 +106,9 @@ def run_extraction(document_text: str, client: Optional[Any] = None) -> dict:
         response = client.messages.create(
             model=MODEL,
             max_tokens=4096,
-            temperature=0,
+            # NOTE: claude-sonnet-5 deprecated the `temperature` parameter —
+            # passing it is a 400 error. The model manages its own sampling; we
+            # verify reproducibility empirically (re-run the eval) instead.
             system=_SYSTEM_PROMPT,
             tools=[
                 {

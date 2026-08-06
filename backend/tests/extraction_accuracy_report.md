@@ -82,3 +82,57 @@ for" and "what the schema actually enforces."
 - Consider the `normalize_extraction()` hardening noted above.
 - Expand the ground-truth set beyond 5 documents as more real (ideally
   TerraWatt-provided) proposals become available.
+
+---
+
+# Sprint v4 Re-run (2026-08-05)
+
+Re-measured after the Week-1 prompt-engineering pass: precise field
+definitions, a dedicated system message, a schema-embedded **reasoning field**
+(chain-of-thought *inside* the forced tool call), and **5 few-shot examples**
+for the ambiguous metrics. Changes are *bundled*, not ablated.
+
+## Result: 78/80 — 97.5% (up from 96.2%)
+
+The +1 hides a trade. Ran the pipeline **twice → byte-identical**, so the
+field-level deltas are real, not sampling noise.
+
+| Field | v3 | v4 | Why |
+| --- | --- | --- | --- |
+| triconboston `expected_irr_percent` | ❌ | ✅ | ROE ≠ IRR — few-shot example fixed it |
+| aj_solar `debt_percent`, `equity_percent` | ❌❌ | ✅✅ | null/confidence inconsistency cleared |
+| cambodia `capex_per_mw` | ✅ | ❌ | now `not_found` (see below) |
+| triconboston `capex_per_mw` | ✅ | ❌ | now `not_found` (see below) |
+
+**Net: fixed 3, broke 2.** The headline number buried the real story.
+
+## The capex_per_mw finding
+`capex_per_mw` is a **derived** metric — `total_capex ÷ capacity`, exactly
+(cambodia 13.3M/10 = 1.33M; triconboston 316.8M/150 = 2.112M). Few-shot
+Example #3 taught the model to *stop* deriving it (LLM arithmetic is
+unreliable), so it now faithfully returns `not_found`. But the ground truth
+expects the derived value and **the deterministic deriver isn't built yet**
+(deferred Task 7) — so the value falls through the gap.
+
+**The "regression" is the model being *more correct*** — it stopped doing
+arithmetic we don't trust — and it exposed that our pipeline is *incomplete*,
+not wrong. Fix: build the code-side derivation (Task 7, scoped to
+`capex_per_mw`). The full interchangeable-metrics design stays deferred — the
+eval didn't demand it (debt/equity now pass).
+
+## Two discoveries beyond the numbers
+- **`temperature` is deprecated for `claude-sonnet-5`.** We shipped
+  `temperature=0` with a *passing* test, but **45 mocked unit tests couldn't
+  catch it — only the live eval did** (the mock accepts any kwargs; the real
+  API returns 400). Textbook case for integration testing over mocks alone.
+  Removed the parameter.
+- **Reproducible without `temp=0`.** Two identical runs → the model's default
+  sampling is stable on these docs. Determinism, empirically, not via the knob.
+
+## Caveats
+- N=5 + near-ceiling: **net +1 is within noise** — trust the field-level story,
+  not the headline.
+- Changes are bundled; no per-lever ablation.
+- The capex miss is a **known, principled gap**, not a bug.
+- The v3 `normalize_extraction` hardening recommendation now looks moot —
+  aj_solar debt/equity pass.

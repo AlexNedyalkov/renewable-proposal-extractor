@@ -29,6 +29,8 @@ against the accuracy eval. Each task is one committed improvement.
     sampling noise. Tests pass.
     Files: `backend/app/llm_extraction.py`
     Done 2026-08-05 — `temperature=0` set; asserted by a new test. 41 tests green.
+    SUPERSEDED 2026-08-06 (Task 6): the live eval hit a 400 — `claude-sonnet-5`
+    deprecated `temperature`. Removed the param; determinism verified empirically.
 
 - [x] **Task 4 — Move role + instructions into a dedicated `system` message** (P0, do before the eval)
     Acceptance: `run_extraction` passes a `system=` argument carrying the `<role>` and
@@ -53,12 +55,14 @@ against the accuracy eval. Each task is one committed improvement.
     [x] D — 5 worked examples in the system prompt (3 confident : 2 not_found, to
         match the real distribution and avoid anchoring on not_found) + test (2026-08-05).
 
-- [ ] **Task 6 — Measure the prompt/schema changes against the eval** (P0)
-    Acceptance: run the accuracy eval on the original prompt vs the improved one;
-    record whether accuracy on the ambiguous fields moved. Before/after numbers.
-    Teaching beat: run once at default temp, once at temp=0, and watch the run-to-run
-    noise disappear.
-    Files: `backend/scripts/evaluate_extraction_accuracy.py`
+- [x] **Task 6 — Measure the prompt/schema changes against the eval** (P0)
+    Acceptance: run the accuracy eval on the improved pipeline; record the field-level
+    before/after. Done 2026-08-06 — 96.2% → 97.5% (77→78/80): fixed 3 (IRR, debt%,
+    equity%), broke 2 (`capex_per_mw`, a derived metric — motivates Task 7). Ran twice
+    → identical (reproducible even after removing the deprecated `temperature`). Also
+    fixed `evaluate_extraction_accuracy.py` to load `.env`. Full write-up in
+    `backend/tests/extraction_accuracy_report.md` (Sprint v4 Re-run).
+    Files: `backend/scripts/evaluate_extraction_accuracy.py`, report.
 
 - [ ] **Task 7 (deferred) — Interchangeable financial metrics: extract faithfully,
     derive in code** (P2)

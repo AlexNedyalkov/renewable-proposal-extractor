@@ -17,11 +17,17 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
+from dotenv import load_dotenv
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.pdf_extraction import extract_text  # noqa: E402
 from app.llm_extraction import run_extraction  # noqa: E402
 from app.validation import normalize_extraction  # noqa: E402
+
+# The script calls the real Anthropic API, so it needs ANTHROPIC_API_KEY in the
+# environment. Load it from backend/.env — same as main.py and the live tests do.
+load_dotenv()
 
 REAL_SAMPLES_DIR = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "real_samples"
 GROUND_TRUTH_DIR = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "ground_truth"
