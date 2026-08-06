@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.pdf_extraction import extract_text  # noqa: E402
 from app.llm_extraction import run_extraction  # noqa: E402
 from app.validation import normalize_extraction  # noqa: E402
+from app.derivation import derive_fields  # noqa: E402
 
 # The script calls the real Anthropic API, so it needs ANTHROPIC_API_KEY in the
 # environment. Load it from backend/.env — same as main.py and the live tests do.
@@ -87,7 +88,8 @@ def run_document(pdf_path: Path, ground_truth_path: Path) -> Dict[str, Any]:
 
     text = extract_text(pdf_path)
     raw_extraction = run_extraction(text)
-    extraction = normalize_extraction(raw_extraction).model_dump()
+    normalized = normalize_extraction(raw_extraction)
+    extraction = derive_fields(normalized).model_dump()
 
     result = score_document(extraction, ground_truth["fields"])
     result["source_pdf"] = ground_truth["source_pdf"]

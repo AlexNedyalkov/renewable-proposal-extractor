@@ -136,3 +136,25 @@ eval didn't demand it (debt/equity now pass).
 - The capex miss is a **known, principled gap**, not a bug.
 - The v3 `normalize_extraction` hardening recommendation now looks moot —
   aj_solar debt/equity pass.
+
+## Update — capex_per_mw derivation + a non-determinism surprise (2026-08-06)
+
+Added deterministic `capex_per_mw = total_capex_usd / installed_capacity_mw`
+(Task 7, computed in code — not the LLM). It **fixed both target misses**:
+cambodia and triconboston → 16/16.
+
+But a **third** eval run overturned the reproducibility claim above.
+`aj_solar` — 16/16 in the two earlier runs — dropped to **12/16**: the *model*
+now extracts `total_capex`, `debt%`, `equity%` where it twice returned
+`not_found`. Nothing in our code touches those fields → **pure model
+non-determinism.** This run scored 76/80, but that digit is noise.
+
+Lessons:
+- **Two matching runs ≠ determinism.** We over-concluded from N=2.
+  `claude-sonnet-5` samples non-deterministically and (temperature deprecated)
+  gives us no knob to pin it.
+- **Derivation cascades input errors:** the model's spurious `total_capex` fed a
+  spurious derived `capex_per_mw`. A derived value is only as sound as its inputs.
+- Reinforces the roadmap: **more documents AND multiple runs** for stable signal.
+  Self-consistency (majority vote over N runs) is back on the table *precisely
+  because* the model samples freely — no temp needed.

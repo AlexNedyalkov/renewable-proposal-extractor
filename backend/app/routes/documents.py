@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
 
+from app.derivation import derive_fields
 from app.llm_extraction import ExtractionError, run_extraction
 from app.pdf_extraction import NoExtractableTextError, extract_text
 from app.schemas import ProposalExtraction
@@ -60,6 +61,7 @@ async def upload_document(file: UploadFile = File(...)) -> DocumentAnalysisRespo
         ) from exc
 
     extraction = normalize_extraction(raw_extraction)
+    extraction = derive_fields(extraction)
 
     document_id = str(uuid.uuid4())
     save_document(document_id, extraction)

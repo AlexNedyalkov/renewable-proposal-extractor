@@ -64,10 +64,12 @@ against the accuracy eval. Each task is one committed improvement.
     `backend/tests/extraction_accuracy_report.md` (Sprint v4 Re-run).
     Files: `backend/scripts/evaluate_extraction_accuracy.py`, report.
 
-- [ ] **Task 7 (deferred) — Interchangeable financial metrics: extract faithfully,
-    derive in code** (P2)
-    Idea: the LLM extracts whichever *form* a metric is stated in (%, ratio, multiple)
-    plus a form label; deterministic code converts to canonical debt%/equity%. Keeps
-    arithmetic out of the LLM (removes a hallucination class) and preserves provenance.
-    Watch the 100%-sum trap with 3+ funding sources. Deferred — validate against the
-    eval before building.
+- [~] **Task 7 — Extract faithfully, derive in code** (P2)
+    [x] `capex_per_mw = total_capex_usd / installed_capacity_mw` — new
+        `app/derivation.py`, wired into the route + eval, 5 tests. Provenance in
+        `source_snippet` (incl. both input snippets); confidence = weaker input; only
+        fires when capex is not_found + inputs are valid numbers + capacity > 0. Fixed
+        cambodia + triconboston capex (2026-08-06). Caveat: derivation cascades upstream
+        input errors — see report.
+    [ ] Interchangeable debt/equity forms (%, ratio, multiple) — STILL DEFERRED; the
+        eval hasn't demanded it (debt/equity pass). Watch the 100%-sum trap (3+ sources).
