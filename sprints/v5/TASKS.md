@@ -7,10 +7,12 @@ Kimi K3 · Qwen3.8-Max; slugs in PRD §4.4); current 5 keep their v3-verified GT
 
 Sequenced so the protocol exists *before* we annotate, and data exists *before* we score.
 
-- [ ] **Task 1 — Annotation protocol + match-strategy catalog** (P0, do first)
+- [x] **Task 1 — Annotation protocol + match-strategy catalog** (P0, do first)
     Acceptance: `tests/fixtures/DATASET_CARD.md` scaffolded with the ground-truth **protocol**
-    (Option B dual-annotation, per-field value + `match` + `notes`/source-quote, ambiguous-field
-    rules) and the **match-strategy catalog** (`exact` · `contains` · `date` · `numeric`).
+    (Option B multi-model annotation, per-field value + `match` + `notes`/source-quote,
+    ambiguous-field rules) and the **match-strategy catalog** (`exact` · `contains` · `date` ·
+    `numeric`). Done 2026-08-06 — built example-first across the 16 fields; key rule captured:
+    *ground truth encodes the extractor's current policy* (the capex lesson generalized).
 
 - [ ] **Task 2 — Coverage plan + source shortlist** (P0)
     Acceptance: a 17-slot target matrix (technology × geography × source/style) with a candidate
