@@ -2,7 +2,8 @@
 
 Goal (see `PRD.md`): a trustworthy, diverse, **verified, held-out** 22-doc eval dataset
 (10 dev / 12 held-out test; **17 new docs** need ground truth via **Option B** independent
-dual annotation; current 5 keep their v3-verified GT).
+**multi-model** annotation — odd N, default 3: Claude + GPT-5 + Gemini 3 Pro; current 5 keep
+their v3-verified GT).
 
 Sequenced so the protocol exists *before* we annotate, and data exists *before* we score.
 
@@ -25,18 +26,18 @@ Sequenced so the protocol exists *before* we annotate, and data exists *before* 
     Acceptance: same download→`extract_text()`→keep-text-native loop; fill remaining
     diversity/coverage gaps. Reach **17 new** + 5 current = 22 total.
 
-- [ ] **Task 5 — Build the GT dual-draft + reconcile tool** (P0) · needs `OPENROUTER_API_KEY`
-    Acceptance: a minimal script that, per doc, produces **Draft A** (Claude) and **Draft B**
-    (independent model via OpenRouter), then **auto-diffs** them field-by-field → a
-    **disagreements report** (doc · field · A value+quote · B value+quote); agreements
-    auto-accepted. *Purpose-built for GT data creation — NOT the v6 eval-harness.*
+- [ ] **Task 5 — Build the GT multi-model draft + reconcile tool** (P0) · needs `OPENROUTER_API_KEY`
+    Acceptance: a minimal script that, per doc, gets independent drafts from **N models** (odd,
+    default 3: Claude + GPT-5 + Gemini 3 Pro via OpenRouter), then reconciles per field —
+    **unanimous** → auto-accept · **majority** → accept (flag) · **split** → report (doc · field
+    · each model's value+quote). *Purpose-built for GT data creation — NOT the v6 eval-harness.*
 
-- [ ] **Task 6 — Dual-draft ground truth for the 17 new docs** (P0) · needs `OPENROUTER_API_KEY`
-    Acceptance: run Task-5 tool over all 17 new docs → auto-accepted agreements written to
-    `ground_truth/<name>.json` (marked from-agreement); disagreements collected for Task 7.
+- [ ] **Task 6 — Multi-model draft ground truth for the 17 new docs** (P0) · needs `OPENROUTER_API_KEY`
+    Acceptance: run Task-5 tool over all 17 new docs → unanimous/majority consensus written to
+    `ground_truth/<name>.json`; splits collected for Task 7; inter-annotator agreement recorded.
 
-- [ ] **Task 7 — Adjudicate disagreements → verified ground truth** (P0)
-    Acceptance: the user resolves each disagreement against the source doc; ambiguous decisions
+- [ ] **Task 7 — Adjudicate splits → verified ground truth** (P0)
+    Acceptance: the user resolves each split against the source doc; ambiguous decisions
     (IRR vs ROE, debt % vs ratio) recorded in `notes`; all 17 fixtures marked **verified**.
 
 - [ ] **Task 8 — Record & enforce the train/test split** (P0)

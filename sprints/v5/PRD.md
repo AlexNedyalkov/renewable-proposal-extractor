@@ -63,21 +63,29 @@ protocol. *(Machinery — self-consistency, multi-model, metric fixes — is v6,
 - **Private:** a project/green-bond prospectus, a listed investment-trust report.
 - ⚠️ ADB blocks bots (403) → manual download. Skip scanned/compressed PDFs (no OCR in scope).
 
-### 4.4 Ground-truth protocol — Option B (independent dual annotation)
-The real-world method: two annotators label independently, a human adjudicates disagreements.
-Here, two *models* are the annotators. Runs on the **17 new docs only** (current 5 keep v3 GT).
+### 4.4 Ground-truth protocol — Option B (independent multi-model annotation)
+The real-world method: several annotators label independently, a human adjudicates
+disagreements. Here, an **odd number of SOTA models are the annotators** (default **3**:
+Claude + GPT-5 + Gemini 3 Pro via **OpenRouter**; 5 for max robustness). They are **equal**
+annotators — no privileged model. Runs on the **17 new docs only** (current 5 keep v3 GT).
 
 For each new doc, produce `tests/fixtures/ground_truth/<name>.json` (per field:
 `expected_found`, `expected_value`, `match`, `notes` with source quote + ambiguity reasoning):
-1. **Draft A** — Claude reads the source, fills GT with source quotes.
-2. **Draft B** — an *independent* model (GPT-5 / Gemini via **OpenRouter**) drafts it separately.
-3. **Auto-reconcile** — a script diffs A vs B per field: **agreements auto-accepted**;
-   **disagreements** → a report (doc · field · A value+quote · B value+quote).
-4. **Human adjudication** — the user resolves *only the disagreements* against the source.
+1. **Independent drafts** — each of the N models fills GT from the source separately (Claude's
+   draft also carries the source quotes as the template).
+2. **Auto-reconcile per field:** **unanimous** → auto-accept · **majority** (e.g. 2-of-3) →
+   accept the majority, optionally flag · **split / no majority** → send to human adjudication.
+3. **Human adjudication** — the user resolves *only the splits* against the source.
+4. Record **inter-annotator agreement** (how often all N agreed) in the dataset card — an honest
+   signal of GT reliability.
 
-**Scope guardrails (keep v5 ≠ v6):** the Draft-B call is a *minimal, purpose-built GT-drafting
-script* (data creation) — **not** the v6 eval-harness (benchmarking the extractor across models).
-A thin shared "call model X" helper is all they share; **no full multi-model abstraction in v5.**
+**Odd N avoids ties.** Different model families (Claude / GPT / Gemini, optionally a strong open
+model) = real independence.
+
+**Scope guardrails (keep v5 ≠ v6):** the annotator calls are a *minimal, purpose-built
+GT-drafting script* (data creation) — **not** the v6 eval-harness (benchmarking the extractor
+across models). A thin shared "call model X" helper is all they share; **no full multi-model
+abstraction in v5.**
 
 - **Ambiguous fields** (IRR vs ROE, debt as % vs ratio) → record the *decision* in `notes`,
   consistent with v4's "faithful extraction, derive in code" rules.
@@ -113,7 +121,7 @@ the annotation protocol, and known limitations.
 
 ## 7. Decisions (confirmed 2026-08-06)
 1. **Split:** 10 dev (current 5 + 5 new diverse) / 12 held-out test → 22 total; **17 new need GT**.
-2. **GT verification:** **Option B** — independent dual annotation (Claude + GPT-5/Gemini) with
-   human adjudication of *disagreements only* (§4.4); scoped as a minimal GT-drafting tool, not
-   the v6 harness.
+2. **GT verification:** **Option B** — independent **multi-model** annotation (odd N, default
+   **3**: Claude + GPT-5 + Gemini 3 Pro) with majority-vote consensus + human adjudication of
+   *splits only* (§4.4); scoped as a minimal GT-drafting tool, not the v6 harness.
 3. **Second model** via OpenRouter → needs `OPENROUTER_API_KEY` in the env.
