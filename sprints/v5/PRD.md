@@ -65,9 +65,17 @@ protocol. *(Machinery — self-consistency, multi-model, metric fixes — is v6,
 
 ### 4.4 Ground-truth protocol — Option B (independent multi-model annotation)
 The real-world method: several annotators label independently, a human adjudicates
-disagreements. Here, an **odd number of SOTA models are the annotators** (default **3**:
-Claude + GPT-5 + Gemini 3 Pro via **OpenRouter**; 5 for max robustness). They are **equal**
-annotators — no privileged model. Runs on the **17 new docs only** (current 5 keep v3 GT).
+disagreements. Here, **5 frontier models from 5 distinct labs** are the annotators (equal —
+no privileged model; odd N → clean 3-of-5 majority). Slugs confirmed on OpenRouter's live API
+(2026-08-06; re-verify at build):
+- `anthropic/claude-opus-5-20260723` — Claude Opus 5
+- `openai/gpt-5.6-sol-20260709` — GPT-5.6 Sol
+- `x-ai/grok-4.5` — Grok 4.5
+- `moonshotai/kimi-k3-20260715` — Kimi K3
+- `qwen/qwen3.8-max-20260803` — Qwen3.8-Max
+
+Five distinct labs (Anthropic · OpenAI · xAI · Moonshot · Alibaba; 3 US / 2 China) → genuinely
+independent training lineages. Runs on the **17 new docs only** (current 5 keep v3 GT).
 
 For each new doc, produce `tests/fixtures/ground_truth/<name>.json` (per field:
 `expected_found`, `expected_value`, `match`, `notes` with source quote + ambiguity reasoning):
@@ -79,8 +87,8 @@ For each new doc, produce `tests/fixtures/ground_truth/<name>.json` (per field:
 4. Record **inter-annotator agreement** (how often all N agreed) in the dataset card — an honest
    signal of GT reliability.
 
-**Odd N avoids ties.** Different model families (Claude / GPT / Gemini, optionally a strong open
-model) = real independence.
+**Odd N avoids ties**; five distinct labs give real annotator independence — and per-model
+agreement rates are a free preview of each model's reliability on this task (feeds v6).
 
 **Scope guardrails (keep v5 ≠ v6):** the annotator calls are a *minimal, purpose-built
 GT-drafting script* (data creation) — **not** the v6 eval-harness (benchmarking the extractor
@@ -121,7 +129,8 @@ the annotation protocol, and known limitations.
 
 ## 7. Decisions (confirmed 2026-08-06)
 1. **Split:** 10 dev (current 5 + 5 new diverse) / 12 held-out test → 22 total; **17 new need GT**.
-2. **GT verification:** **Option B** — independent **multi-model** annotation (odd N, default
-   **3**: Claude + GPT-5 + Gemini 3 Pro) with majority-vote consensus + human adjudication of
-   *splits only* (§4.4); scoped as a minimal GT-drafting tool, not the v6 harness.
+2. **GT verification:** **Option B** — independent **multi-model** annotation by **5 frontier
+   models from 5 labs** (Opus 5 · GPT-5.6 Sol · Grok 4.5 · Kimi K3 · Qwen3.8-Max — slugs in
+   §4.4) with majority-vote consensus + human adjudication of *splits only*; scoped as a minimal
+   GT-drafting tool, not the v6 harness.
 3. **Second model** via OpenRouter → needs `OPENROUTER_API_KEY` in the env.

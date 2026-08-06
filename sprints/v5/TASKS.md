@@ -2,8 +2,8 @@
 
 Goal (see `PRD.md`): a trustworthy, diverse, **verified, held-out** 22-doc eval dataset
 (10 dev / 12 held-out test; **17 new docs** need ground truth via **Option B** independent
-**multi-model** annotation — odd N, default 3: Claude + GPT-5 + Gemini 3 Pro; current 5 keep
-their v3-verified GT).
+**multi-model** annotation — 5 frontier models from 5 labs (Opus 5 · GPT-5.6 Sol · Grok 4.5 ·
+Kimi K3 · Qwen3.8-Max; slugs in PRD §4.4); current 5 keep their v3-verified GT).
 
 Sequenced so the protocol exists *before* we annotate, and data exists *before* we score.
 
@@ -27,8 +27,8 @@ Sequenced so the protocol exists *before* we annotate, and data exists *before* 
     diversity/coverage gaps. Reach **17 new** + 5 current = 22 total.
 
 - [ ] **Task 5 — Build the GT multi-model draft + reconcile tool** (P0) · needs `OPENROUTER_API_KEY`
-    Acceptance: a minimal script that, per doc, gets independent drafts from **N models** (odd,
-    default 3: Claude + GPT-5 + Gemini 3 Pro via OpenRouter), then reconciles per field —
+    Acceptance: a minimal script that, per doc, gets independent drafts from the **5 models**
+    (5 labs; slugs in PRD §4.4, via OpenRouter), then reconciles per field —
     **unanimous** → auto-accept · **majority** → accept (flag) · **split** → report (doc · field
     · each model's value+quote). *Purpose-built for GT data creation — NOT the v6 eval-harness.*
 
