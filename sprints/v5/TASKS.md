@@ -14,19 +14,24 @@ Sequenced so the protocol exists *before* we annotate, and data exists *before* 
     `numeric`). Done 2026-08-06 — built example-first across the 16 fields; key rule captured:
     *ground truth encodes the extractor's current policy* (the capex lesson generalized).
 
-- [ ] **Task 2 — Coverage plan + source shortlist** (P0)
-    Acceptance: a 17-slot target matrix (technology × geography × source/style) with a candidate
-    URL per slot, hitting the diversity targets incl. **≥6 docs where the hard fields are
-    genuinely stated**. Builds on `EVAL_DOCS_CANDIDATES.md`.
+- [x] **Task 2 — Coverage plan + source shortlist** (P0)
+    Acceptance: a target matrix (technology × geography × source/style) with candidate URLs.
+    Done 2026-08-06 — `sprints/v5/SOURCES.md`. Reallocated for sourceability (hydro/hybrid up,
+    **offshore wind → documented gap**; source-style capped at single-project dev-bank).
 
-- [ ] **Task 3 — Acquire dev-bank docs (WB PADs, IFC, AIIB)** (P0)
-    Acceptance: download → `extract_text()` → keep only **text-native** → save to
-    `tests/fixtures/real_samples/`. Skip scanned/blocked (note them). ~9 docs.
-    *(Collaborative: some sources need manual browser download.)*
+- [x] **Task 3 — Acquire dev-bank docs (WB PADs)** (P0)
+    Acceptance: download → `extract_text()` → keep only **text-native** → `real_samples/`.
+    Done 2026-08-06 — 12 new WB PADs (curl works; ADB blocked) validated text-native + field-rich;
+    dropped field-poor ones (India/Ukraine hybrids, Kambarata, PP4206). **17 total eval docs**
+    (5 current + 12 new): 4 techs (solar/wind/hydro/hybrid), 4 regions (Asia/Africa/Caucasus/
+    LatAm), ~10 long docs for RAG. Effort-gated stop short of 20.
 
-- [ ] **Task 4 — Acquire private-sector docs (bond prospectus, investment trust)** (P0)
-    Acceptance: same download→`extract_text()`→keep-text-native loop; fill remaining
-    diversity/coverage gaps. Reach **17 new** + 5 current = 22 total.
+- [x] **Task 4 — Private-sector docs → investigated, decision made** (P0)
+    Done 2026-08-06 — **finding: single-project *private* docs are scarce publicly.** Adani =
+    blocked + corporate/portfolio; investment trusts (Greencoat) = portfolio-level (many assets,
+    no single-project fields). **Decision:** keep the eval **single-project (dev-bank)**; note the
+    style limitation in the dataset card; **park Greencoat in `tests/fixtures/rag_material/`** for
+    v7 RAG (it's ideal there). So the 17-doc set is all dev-bank single-project.
 
 - [ ] **Task 5 — Build the GT multi-model draft + reconcile tool** (P0) · needs `OPENROUTER_API_KEY`
     Acceptance: a minimal script that, per doc, gets independent drafts from the **5 models**
